@@ -2,13 +2,13 @@ package org.example;
 
 public class ElevatorTask {
     private final int currentFloor;
-    private final int destinationFloor;
-    public ElevatorTask(int currentFloor, int destinationFloor) {
+    private final ElevatorDirection direction;
+    public ElevatorTask(int currentFloor, ElevatorDirection direction) {
         this.currentFloor = currentFloor;
-        this.destinationFloor = destinationFloor;
+        this.direction = direction;
     }
 
-    public int getDestinationFloor() {
-        return destinationFloor;
+    public ElevatorDirection getDirection() {
+        return this.direction;
     }
 }

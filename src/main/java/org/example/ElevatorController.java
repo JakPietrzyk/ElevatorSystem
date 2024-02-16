@@ -10,12 +10,12 @@ public class ElevatorController implements ElevatorSystem{
         elevatorManager = new ElevatorManager(numberOfElevators);
     }
     @Override
-    public void pickup(int floor, int direction) {
+    public void pickup(int floor, ElevatorDirection direction) {
         elevatorManager.addRequest(floor, direction);
     }
 
     @Override
-    public void update(int elevatorId, int floor, int direction) {
+    public void update(int elevatorId, int floor, ElevatorDirection direction) {
         elevatorManager.update(elevatorId, floor, direction);
     }
 
@@ -26,7 +26,7 @@ public class ElevatorController implements ElevatorSystem{
     }
 
     @Override
-    public ArrayList<ArrayList<Integer>> status() {
+    public ArrayList<ElevatorStatus> status() {
         return  elevatorManager.status();
     }
 }

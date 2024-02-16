@@ -2,6 +2,7 @@ package org.example;
 
 import constants.ElevatorSettings;
 
+import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 
 public class ElevatorManager implements Manager{
@@ -10,7 +11,7 @@ public class ElevatorManager implements Manager{
     private int numberOfElevators;
     private int lowestPossibleFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
     private int highestPossibleFloor = ElevatorSettings.HIGHEST_FLOOR_NUMBER;
-    private ArrayList<ArrayList<Integer>> waitingRequests;
+    private ArrayList<ElevatorTask> waitingRequests;
     public ElevatorManager(int numberOfElevators)
     {
         this.elevators = new ArrayList<>();
@@ -22,9 +23,9 @@ public class ElevatorManager implements Manager{
         this.waitingRequests = new ArrayList<>();
     }
 
-    public ArrayList<ArrayList<Integer>> status()
+    public ArrayList<ElevatorStatus> status()
     {
-        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        ArrayList<ElevatorStatus> result = new ArrayList<>();
         for(var elevator : this.elevators)
         {
             result.add(elevator.status());
@@ -41,33 +42,33 @@ public class ElevatorManager implements Manager{
     }
 
     @Override
-    public void addRequest(int floor, int direction) {
+    public void addRequest(int floor, ElevatorDirection direction) {
         if(!isRequestValid(floor))
-            return; // do zmiany
+            try {
+                throw new InvalidAttributeValueException(); // do zmiany
+            } catch (InvalidAttributeValueException e) {
+                throw new RuntimeException(e);
+            }
         for (Elevator elevator : elevators) {
-            int elevatorDirection = elevator.getDirection();
-            if (elevatorDirection == 0 || elevatorDirection == direction) {
-                if(TryAddRequest(elevator, floor))
-                {
-                    break;
-                }
+            ElevatorDirection elevatorDirection = elevator.getDirection();
+            if (elevatorDirection == ElevatorDirection.Idle
+                    || (elevatorDirection == direction &&  elevator.IsFloorInRange(floor))) {
+                elevator.addRequest(floor);
+                break;
             }
         }
-        ArrayList<Integer> waitingRequest = new ArrayList<>();
-        waitingRequest.add(floor);
-        waitingRequest.add(direction);
-        this.waitingRequests.add(waitingRequest);
+        this.waitingRequests.add(new ElevatorTask(floor, direction));
     }
 
     @Override
-    public void update(int elevatorId, int floor, int direction) {
+    public void update(int elevatorId, int floor, ElevatorDirection direction) {
 
     }
 
     private boolean isRequestValid(int currentFloor)
     {
-        return currentFloor < highestPossibleFloor
-                && lowestPossibleFloor < currentFloor;
+        return currentFloor <= highestPossibleFloor
+                && lowestPossibleFloor <= currentFloor;
     }
 
     private boolean TryAddRequest(Elevator elevator, int floor)
