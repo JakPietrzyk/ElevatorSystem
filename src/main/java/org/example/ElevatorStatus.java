@@ -12,6 +12,14 @@ public class ElevatorStatus {
         this.destinationFloor = destinationFloor;
     }
 
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
+
+    public int getDestinationFloor() {
+        return destinationFloor;
+    }
+
     @Override
     public String toString() {
         return "[id: " + this.id + " current floor: " + this.currentFloor + " destination floor: " + this.destinationFloor + "]";
