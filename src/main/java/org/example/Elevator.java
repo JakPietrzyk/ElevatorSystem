@@ -1,11 +1,14 @@
 package org.example;
 import constants.ElevatorSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Elevator {
+    private static final Logger logger = LoggerFactory.getLogger(Elevator.class);
     private final int id;
     private int currentFloor;
     private int destinationFloor;
@@ -51,13 +54,32 @@ public class Elevator {
     {
         return this.destinationFloor;
     }
+
+    public int getId() {
+        return id;
+    }
+
     public void addRequest(int floor)
     {
-        if(tasks.isEmpty() && this.currentFloor == this.destinationFloor)
+        if(tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor)
         {
             this.direction = ElevatorDirection.Idle;
         }
-        tasks.add(floor);
+        tasks.addRequestInside(floor, this.currentFloor, this.getDirection());
+        if(this.direction == ElevatorDirection.Idle)
+        {
+            this.destinationFloor = this.tasks.getTask();
+            this.direction = (this.destinationFloor > this.currentFloor) ? ElevatorDirection.Up : ElevatorDirection.Down;
+        }
+    }
+
+    public void addRequestInside(int floor)
+    {
+        if(tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor)
+        {
+            this.direction = ElevatorDirection.Idle;
+        }
+        tasks.addRequestInside(floor, this.currentFloor,this.direction);
         if(this.direction == ElevatorDirection.Idle)
         {
             this.destinationFloor = this.tasks.getTask();
@@ -67,21 +89,29 @@ public class Elevator {
 
     public void makeStep() {
         if (this.currentFloor == this.destinationFloor) {
+            logger.debug("Elevator id: " + this.id + "reached destination");
+            if(this.tasks.isEmptyQueue())
+            {
+
+            }
             System.out.println("\tEnter destination floor number:");
             Scanner scanner = new Scanner(System.in);
             try{
                 int destinationFloor = scanner.nextInt();
-                addRequest(destinationFloor);
+                logger.debug("Adding new floor from inside elevator: " + destinationFloor);
+                addRequestInside(destinationFloor);
             }
             catch (InputMismatchException e)
             {
                 System.out.println("Wrong destination floor number");
             }
 
-            if (!this.tasks.isEmpty()) {
+            if (!this.tasks.isEmptyQueue()) {
                 this.destinationFloor = this.tasks.getTask();
-            } else if (this.tasks.isEmpty() && this.currentFloor == this.destinationFloor){
+                logger.debug("Elevator id: " + this.id + "is setting new destination: " + this.destinationFloor);
+            } else if (this.tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor){
                 this.direction = ElevatorDirection.Idle;
+                logger.debug("Elevator id: " + this.id + "is now Idle");
             }
         }
 

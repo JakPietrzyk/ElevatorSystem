@@ -4,6 +4,7 @@ import constants.ElevatorSettings;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ElevatorManager implements Manager{
     private ArrayList<Elevator> elevators;
@@ -45,7 +46,7 @@ public class ElevatorManager implements Manager{
     public void addRequest(int floor, ElevatorDirection direction) {
         if(!isRequestValid(floor))
             try {
-                throw new InvalidAttributeValueException(); // do zmiany
+                throw new InvalidAttributeValueException();
             } catch (InvalidAttributeValueException e) {
                 throw new RuntimeException(e);
             }
@@ -54,11 +55,32 @@ public class ElevatorManager implements Manager{
             if (elevatorDirection == ElevatorDirection.Idle
                     || (elevatorDirection == direction &&  elevator.IsFloorInRange(floor))) {
                 elevator.addRequest(floor);
-                break;
+                return;
             }
         }
         this.waitingRequests.add(new ElevatorTask(floor, direction));
     }
+
+    public void addRequestInsideElevator(int elevatorId ,int floor)
+    {
+        if(!isRequestValid(floor))
+            try {
+                throw new InvalidAttributeValueException();
+            } catch (InvalidAttributeValueException e) {
+                throw new RuntimeException(e);
+            }
+
+        Optional<Elevator> elevatorOptional = elevators.stream()
+                .filter(elevator -> elevator.getId() == elevatorId)
+                .findFirst();
+        if (elevatorOptional.isPresent()) {
+            Elevator elevator = elevatorOptional.get();
+            elevator.addRequestInside(floor);
+        } else {
+            throw new RuntimeException("Invalid elevatorId");
+        }
+    }
+
 
     @Override
     public void update(int elevatorId, int floor, ElevatorDirection direction) {

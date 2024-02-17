@@ -1,8 +1,12 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 public class ElevatorController implements ElevatorSystem{
+    private static final Logger logger = LoggerFactory.getLogger(ElevatorController.class);
     private final ElevatorManager elevatorManager;
 
     public ElevatorController(int numberOfElevators)
@@ -19,8 +23,14 @@ public class ElevatorController implements ElevatorSystem{
         elevatorManager.update(elevatorId, floor, direction);
     }
 
+    public void addRequestInsideElevator(int elevatorId, int floor)
+    {
+        elevatorManager.addRequestInsideElevator(elevatorId, floor);
+    }
+
     @Override
     public void step() {
+        logger.info("makeStep Invoked");
         elevatorManager.makeStep();
         System.out.println(elevatorManager.status());
     }
