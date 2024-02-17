@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class ElevatorQueueManager {
@@ -64,6 +65,31 @@ public class ElevatorQueueManager {
         }
     }
 
+    public ElevatorDirection processWaitingTasks(int currentFloor)
+    {
+        if(this.elevatorWaitingQueue.isEmpty()) return ElevatorDirection.Idle;
+
+        int firstTask = this.elevatorWaitingQueue.peek();
+        ElevatorDirection newDirection = determineDirection(currentFloor, firstTask);
+        Iterator<Integer> iterator = this.elevatorWaitingQueue.iterator();
+        while (iterator.hasNext()) {
+            int task = iterator.next();
+            ElevatorDirection taskDirection = determineDirection(currentFloor, task);
+            if (taskDirection == newDirection) {
+                this.elevatorQueue.add(task);
+                iterator.remove();
+            }
+        }
+        switch (newDirection)
+        {
+            case Up -> {this.elevatorQueue.sort(Comparator.naturalOrder());}
+            case Down -> {this.elevatorQueue.sort(Comparator.reverseOrder());}
+        }
+        return newDirection;
+    }
+    private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
+        return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
+    }
     public Integer getTask()
     {
         return this.elevatorQueue.pop();

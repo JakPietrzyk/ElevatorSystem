@@ -89,29 +89,34 @@ public class Elevator {
 
     public void makeStep() {
         if (this.currentFloor == this.destinationFloor) {
-            logger.debug("Elevator id: " + this.id + "reached destination");
-            if(this.tasks.isEmptyQueue())
+            logger.debug("Elevator id: " + this.id + " reached destination");
+            if(this.tasks.isEmptyQueue() && !this.tasks.isEmptyWaitingQueue())
             {
-
+                logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");
+                this.direction = this.tasks.processWaitingTasks(this.currentFloor);
+                logger.debug("Elevator id: " + this.id + " new direction: " + this.direction);
             }
-            System.out.println("\tEnter destination floor number:");
-            Scanner scanner = new Scanner(System.in);
-            try{
-                int destinationFloor = scanner.nextInt();
-                logger.debug("Adding new floor from inside elevator: " + destinationFloor);
-                addRequestInside(destinationFloor);
-            }
-            catch (InputMismatchException e)
+            if(this.direction != ElevatorDirection.Idle)
             {
-                System.out.println("Wrong destination floor number");
+                System.out.println("\tEnter destination floor number:");
+                Scanner scanner = new Scanner(System.in);
+                try{
+                    int destinationFloor = scanner.nextInt();
+                    logger.debug("Adding new floor from inside elevator: " + destinationFloor);
+                    addRequestInside(destinationFloor);
+                }
+                catch (InputMismatchException e)
+                {
+                    System.out.println("Wrong destination floor number");
+                }
             }
 
             if (!this.tasks.isEmptyQueue()) {
                 this.destinationFloor = this.tasks.getTask();
-                logger.debug("Elevator id: " + this.id + "is setting new destination: " + this.destinationFloor);
-            } else if (this.tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor){
+                logger.debug("Elevator id: " + this.id + " is setting new destination: " + this.destinationFloor + " " + this.direction);
+            } else if (this.tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor && this.direction != ElevatorDirection.Idle){
                 this.direction = ElevatorDirection.Idle;
-                logger.debug("Elevator id: " + this.id + "is now Idle");
+                logger.debug("Elevator id: " + this.id + " is now Idle");
             }
         }
 

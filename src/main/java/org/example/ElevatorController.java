@@ -30,7 +30,6 @@ public class ElevatorController implements ElevatorSystem{
 
     @Override
     public void step() {
-        logger.info("makeStep Invoked");
         elevatorManager.makeStep();
         System.out.println(elevatorManager.status());
     }

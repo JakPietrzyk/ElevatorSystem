@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         logger.info("Starting elevatorController");
-        ElevatorController elevatorController = new ElevatorController(2);
+        ElevatorController elevatorController = new ElevatorController(1);
         elevatorController.pickup(1, ElevatorDirection.Up);
         elevatorController.pickup(5, ElevatorDirection.Up);
         elevatorController.pickup(3, ElevatorDirection.Up);
