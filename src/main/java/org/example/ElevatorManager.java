@@ -70,16 +70,4 @@ public class ElevatorManager implements Manager{
         return currentFloor <= highestPossibleFloor
                 && lowestPossibleFloor <= currentFloor;
     }
-
-    private boolean TryAddRequest(Elevator elevator, int floor)
-    {
-        var tasks = elevator.getTasks();
-        if(tasks.isEmpty())
-        {
-            elevator.addRequest(floor);
-            return true;
-        }
-        return false;
-    }
-
 }

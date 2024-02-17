@@ -17,6 +17,7 @@ public class ElevatorQueueManager {
     }
     public void add(int floor)
     {
+        //dodać sprawdzenie czy request sie nie powieli (np żeby nie było 3 x 5 pięter
         this.elevatorQueue.add(floor);
         Collections.sort(this.elevatorQueue);
     }
