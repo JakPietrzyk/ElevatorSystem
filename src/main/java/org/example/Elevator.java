@@ -30,7 +30,7 @@ public class Elevator {
     }
     public ElevatorStatus status()
     {
-        return new ElevatorStatus(this.id, this.currentFloor, this.destinationFloor); //tutaj zastanowić się czy na pewno to dobra struktura
+        return new ElevatorStatus(this.id, this.currentFloor, this.destinationFloor, this.direction);
     }
 
     @Override
@@ -71,6 +71,23 @@ public class Elevator {
             this.destinationFloor = this.tasks.getTask();
             this.direction = (this.destinationFloor > this.currentFloor) ? ElevatorDirection.Up : ElevatorDirection.Down;
         }
+        else
+        {
+            checkAndAdjustDestination();
+        }
+    }
+
+    public void checkAndAdjustDestination()
+    {
+        var elevatorQueue = this.tasks.getTasks();
+        if(elevatorQueue.isEmpty()) return;
+        int mayBeNewDestination = elevatorQueue.peek();
+        if(Math.abs(this.currentFloor - mayBeNewDestination) < Math.abs(this.currentFloor - this.destinationFloor))
+        {
+            this.tasks.addRequestInside(this.destinationFloor, this.currentFloor, this.direction);
+            this.destinationFloor = this.tasks.getTask();
+        }
+
     }
 
     public void addRequestInside(int floor)
@@ -79,7 +96,7 @@ public class Elevator {
         {
             this.direction = ElevatorDirection.Idle;
         }
-        tasks.addRequestInside(floor, this.currentFloor,this.direction);
+        tasks.addRequestInside(floor, this.currentFloor, this.direction);
         if(this.direction == ElevatorDirection.Idle)
         {
             this.destinationFloor = this.tasks.getTask();
@@ -89,7 +106,7 @@ public class Elevator {
 
     public void makeStep() {
         if (this.currentFloor == this.destinationFloor) {
-            logger.debug("Elevator id: " + this.id + " reached destination");
+            if(this.direction != ElevatorDirection.Idle) logger.debug("Elevator id: " + this.id + " reached destination");
             if(this.tasks.isEmptyQueue() && !this.tasks.isEmptyWaitingQueue())
             {
                 logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");

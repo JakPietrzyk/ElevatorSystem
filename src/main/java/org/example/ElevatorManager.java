@@ -58,7 +58,36 @@ public class ElevatorManager implements Manager{
                 return;
             }
         }
-        this.waitingRequests.add(new ElevatorTask(floor, direction));
+
+        int bestElevatorIndex = -1;
+        int lowestDistance = Integer.MAX_VALUE;
+        for(int i = 0; i < elevators.size(); i++)
+        {
+            Elevator elevator = elevators.get(i);
+            if(elevator.getDirection() == ElevatorDirection.Idle )
+            {
+                int distance = Math.abs(floor - elevator.getCurrentFloor());
+                if(lowestDistance > distance)
+                {
+                    lowestDistance = distance;
+                    bestElevatorIndex = i;
+                }
+            }
+            else if(elevator.IsFloorInRange(floor))
+            {
+                elevator.addRequest(floor);
+                return;
+            }
+
+        }
+        if(bestElevatorIndex != -1)
+        {
+            elevators.get(bestElevatorIndex).addRequest(floor);
+        }
+        else
+        {
+            this.waitingRequests.add(new ElevatorTask(floor, direction));
+        }
     }
 
     public void addRequestInsideElevator(int elevatorId ,int floor)

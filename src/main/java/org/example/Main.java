@@ -2,17 +2,19 @@ package org.example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Scanner;
-
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         logger.info("Starting elevatorController");
-        ElevatorController elevatorController = new ElevatorController(1);
-        elevatorController.pickup(1, ElevatorDirection.Up);
+        ElevatorController elevatorController = new ElevatorController(2);
         elevatorController.pickup(5, ElevatorDirection.Up);
         elevatorController.pickup(3, ElevatorDirection.Up);
+        elevatorController.step();
+        elevatorController.step();
+        elevatorController.step();
+        elevatorController.step();
+        elevatorController.pickup(2, ElevatorDirection.Down);
 
         Thread elevatorThread = new Thread(() -> {
             while (true) {

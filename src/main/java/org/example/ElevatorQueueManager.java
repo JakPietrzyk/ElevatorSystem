@@ -21,8 +21,7 @@ public class ElevatorQueueManager {
     public void add(int floor)
     {
         if(this.elevatorQueue.contains(floor)) return;
-        //zdecydować czy floor pasuje do kierunku jazdy -> jak nie pasuje to dodać do listy oczekujących
-        if(this.elevatorQueue.getFirst() < floor && floor < this.elevatorQueue.getLast())
+        if(this.elevatorQueue.isEmpty() || (this.elevatorQueue.getFirst() < floor && floor < this.elevatorQueue.getLast()))
         {
             this.elevatorQueue.add(floor);
         }
@@ -35,6 +34,7 @@ public class ElevatorQueueManager {
 
     public void addRequestInside(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
     {
+        if(this.elevatorQueue.contains(floor) /*|| this.elevatorWaitingQueue.contains(floor)*/) return;
         switch (elevatorDirection)
         {
             case Up -> {
@@ -90,6 +90,7 @@ public class ElevatorQueueManager {
     private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
         return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
     }
+
     public Integer getTask()
     {
         return this.elevatorQueue.pop();
