@@ -3,9 +3,7 @@ import constants.ElevatorSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.InputMismatchException;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 public class Elevator {
     private static final Logger logger = LoggerFactory.getLogger(Elevator.class);
@@ -42,8 +40,8 @@ public class Elevator {
         return direction;
     }
 
-    public LinkedList<Integer> getTasks() {
-        return this.tasks.getTasks();
+    public PriorityQueue<Integer> getTasks(ElevatorDirection direction) {
+        return this.tasks.getTasks(direction);
     }
 
     public int getCurrentFloor()
@@ -61,56 +59,56 @@ public class Elevator {
 
     public void addRequest(int floor)
     {
-        if(tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor)
+        if(tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor)
         {
             this.direction = ElevatorDirection.Idle;
         }
         tasks.addRequestInside(floor, this.currentFloor, this.getDirection());
-        if(this.direction == ElevatorDirection.Idle)
+        if(this.direction == ElevatorDirection.Idle && !this.tasks.isEmptyQueue(this.direction))
         {
-            this.destinationFloor = this.tasks.getTask();
+            this.destinationFloor = this.tasks.getTask(this.direction);
             this.direction = (this.destinationFloor > this.currentFloor) ? ElevatorDirection.Up : ElevatorDirection.Down;
         }
         else
         {
-            checkAndAdjustDestination();
+            checkAndAdjustDestination(this.direction);
         }
     }
 
-    public void checkAndAdjustDestination()
+    public void checkAndAdjustDestination(ElevatorDirection direction)
     {
-        var elevatorQueue = this.tasks.getTasks();
+        var elevatorQueue = this.tasks.getTasks(direction);
         if(elevatorQueue.isEmpty()) return;
         int mayBeNewDestination = elevatorQueue.peek();
         if(Math.abs(this.currentFloor - mayBeNewDestination) < Math.abs(this.currentFloor - this.destinationFloor))
         {
             this.tasks.addRequestInside(this.destinationFloor, this.currentFloor, this.direction);
-            this.destinationFloor = this.tasks.getTask();
+            this.destinationFloor = this.tasks.getTask(this.direction);
         }
 
     }
 
     public void addRequestInside(int floor)
     {
-        if(tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor)
+        if(tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor)
         {
             this.direction = ElevatorDirection.Idle;
         }
         tasks.addRequestInside(floor, this.currentFloor, this.direction);
-        if(this.direction == ElevatorDirection.Idle)
+        if(this.direction == ElevatorDirection.Idle && !this.tasks.isEmptyQueue(this.direction))
         {
-            this.destinationFloor = this.tasks.getTask();
+            this.destinationFloor = this.tasks.getTask(this.direction);
             this.direction = (this.destinationFloor > this.currentFloor) ? ElevatorDirection.Up : ElevatorDirection.Down;
         }
     }
 
-    public void makeStep() {
+    public void makeStep(ArrayList<ElevatorTask> waitingTasks) {
         if (this.currentFloor == this.destinationFloor) {
             if(this.direction != ElevatorDirection.Idle) logger.debug("Elevator id: " + this.id + " reached destination");
-            if(this.tasks.isEmptyQueue() && !this.tasks.isEmptyWaitingQueue())
+            if(this.tasks.isEmptyQueue(this.direction) && !waitingTasks.isEmpty())
             {
                 logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");
-                this.direction = this.tasks.processWaitingTasks(this.currentFloor);
+                this.direction = processWaitingTasks(waitingTasks);
                 logger.debug("Elevator id: " + this.id + " new direction: " + this.direction);
             }
             if(this.direction != ElevatorDirection.Idle)
@@ -128,10 +126,10 @@ public class Elevator {
                 }
             }
 
-            if (!this.tasks.isEmptyQueue()) {
-                this.destinationFloor = this.tasks.getTask();
+            if (!this.tasks.isEmptyQueue(this.direction)) {
+                this.destinationFloor = this.tasks.getTask(this.direction);
                 logger.debug("Elevator id: " + this.id + " is setting new destination: " + this.destinationFloor + " " + this.direction);
-            } else if (this.tasks.isEmptyQueue() && this.currentFloor == this.destinationFloor && this.direction != ElevatorDirection.Idle){
+            } else if (this.tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor && this.direction != ElevatorDirection.Idle){
                 this.direction = ElevatorDirection.Idle;
                 logger.debug("Elevator id: " + this.id + " is now Idle");
             }
@@ -144,6 +142,25 @@ public class Elevator {
         }
     }
 
+    private ElevatorDirection processWaitingTasks(ArrayList<ElevatorTask> waitingRequests)
+    {
+        if(waitingRequests.isEmpty()) return ElevatorDirection.Idle;
+
+        var firstRequest = waitingRequests.getFirst();
+        this.direction = determineDirection(this.currentFloor, firstRequest.getCurrentFloor());
+        waitingRequests.stream()
+                .filter(x -> x.getDirection() == this.direction
+                        && IsFloorInRange(x.getCurrentFloor()))
+                .forEach(x -> addRequest(x.getCurrentFloor()));
+        if(this.direction != firstRequest.getDirection())
+        {
+            addRequest(firstRequest.getCurrentFloor());
+        }
+        return this.direction;
+    }
+    private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
+        return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
+    }
     public boolean IsFloorInRange(int floor)
     {
         switch (this.direction)
@@ -157,6 +174,13 @@ public class Elevator {
             }
         }
         return true; // idle
+    }
+
+    public void update(int floor, ElevatorDirection direction)
+    {
+        this.currentFloor = floor;
+        this.destinationFloor = this.currentFloor;
+        this.direction = direction;
     }
 
 }

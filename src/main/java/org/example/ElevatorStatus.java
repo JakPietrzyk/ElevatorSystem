@@ -27,6 +27,9 @@ public class ElevatorStatus {
         return this.direction;
     }
 
+    public int getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

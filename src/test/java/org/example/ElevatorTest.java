@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,16 +23,16 @@ class ElevatorTest {
         assertEquals(ElevatorDirection.Idle, elevator.getDirection());
         elevator.addRequest(1);
         assertEquals(ElevatorDirection.Up, elevator.getDirection());
-        assertEquals(0, elevator.getTasks().size());
+        assertEquals(0, elevator.getTasks(ElevatorDirection.Up).size());
     }
 
     @Test
     void Two_Requests_In_Range_Should_Direction_Up_And_One_Task()
     {
         elevator.addRequest(1);
-        assertEquals(elevator.getDirection(), ElevatorDirection.Up);
+        assertEquals(ElevatorDirection.Up, elevator.getDirection());
         elevator.addRequest(4);
-        assertEquals(1, elevator.getTasks().size());
+        assertEquals(1, elevator.getTasks(ElevatorDirection.Up).size());
     }
 
     @Test
@@ -39,7 +40,7 @@ class ElevatorTest {
         int startingCurrentFloor = elevator.getCurrentFloor();
         String input = "n\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        elevator.makeStep();
+        elevator.makeStep(new ArrayList<>());
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor);
         assertEquals(elevator.getCurrentFloor(), elevator.getDestinationFloor());
@@ -49,7 +50,7 @@ class ElevatorTest {
     void Make_Step_Up_Elevator_Should_Increment_Current_Floor() {
         int startingCurrentFloor = elevator.getCurrentFloor();
         elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
-        elevator.makeStep();
+        elevator.makeStep(new ArrayList<>());
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor + 1);
         assertEquals(ElevatorDirection.Up, elevator.getDirection());

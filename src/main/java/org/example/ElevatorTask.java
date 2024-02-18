@@ -11,4 +11,8 @@ public class ElevatorTask {
     public ElevatorDirection getDirection() {
         return this.direction;
     }
+
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
 }

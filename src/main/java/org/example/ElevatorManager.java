@@ -38,7 +38,7 @@ public class ElevatorManager implements Manager{
     public void makeStep() {
         for(var elevator: this.elevators)
         {
-            elevator.makeStep();
+            elevator.makeStep(this.waitingRequests);
         }
     }
 
@@ -52,13 +52,24 @@ public class ElevatorManager implements Manager{
             }
         for (Elevator elevator : elevators) {
             ElevatorDirection elevatorDirection = elevator.getDirection();
-            if (elevatorDirection == ElevatorDirection.Idle
-                    || (elevatorDirection == direction &&  elevator.IsFloorInRange(floor))) {
+            if (elevatorDirection == direction &&  elevator.IsFloorInRange(floor)) {
                 elevator.addRequest(floor);
                 return;
             }
         }
 
+        int bestElevatorIndex = getBestElevatorIndex(floor);
+        if(bestElevatorIndex != -1)
+        {
+            elevators.get(bestElevatorIndex).addRequest(floor);
+        }
+        else
+        {
+            this.waitingRequests.add(new ElevatorTask(floor, direction));
+        }
+    }
+
+    private int getBestElevatorIndex(int floor) {
         int bestElevatorIndex = -1;
         int lowestDistance = Integer.MAX_VALUE;
         for(int i = 0; i < elevators.size(); i++)
@@ -73,21 +84,8 @@ public class ElevatorManager implements Manager{
                     bestElevatorIndex = i;
                 }
             }
-            else if(elevator.IsFloorInRange(floor))
-            {
-                elevator.addRequest(floor);
-                return;
-            }
-
         }
-        if(bestElevatorIndex != -1)
-        {
-            elevators.get(bestElevatorIndex).addRequest(floor);
-        }
-        else
-        {
-            this.waitingRequests.add(new ElevatorTask(floor, direction));
-        }
+        return bestElevatorIndex;
     }
 
     public void addRequestInsideElevator(int elevatorId ,int floor)
@@ -99,21 +97,26 @@ public class ElevatorManager implements Manager{
                 throw new RuntimeException(e);
             }
 
-        Optional<Elevator> elevatorOptional = elevators.stream()
-                .filter(elevator -> elevator.getId() == elevatorId)
-                .findFirst();
-        if (elevatorOptional.isPresent()) {
-            Elevator elevator = elevatorOptional.get();
-            elevator.addRequestInside(floor);
-        } else {
-            throw new RuntimeException("Invalid elevatorId");
-        }
+        Elevator elevator = getElevatorById(elevatorId);
+        elevator.addRequestInside(floor);
     }
 
 
     @Override
     public void update(int elevatorId, int floor, ElevatorDirection direction) {
+        getElevatorById(elevatorId).update(floor, direction);
+    }
 
+    private Elevator getElevatorById(int elevatorId)
+    {
+        Optional<Elevator> elevatorOptional = elevators.stream()
+                .filter(elevator -> elevator.getId() == elevatorId)
+                .findFirst();
+        if (elevatorOptional.isPresent()) {
+            return elevatorOptional.get();
+        } else {
+            throw new RuntimeException("Invalid elevatorId");
+        }
     }
 
     private boolean isRequestValid(int currentFloor)
