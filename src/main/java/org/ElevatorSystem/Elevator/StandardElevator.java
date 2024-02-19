@@ -108,7 +108,7 @@ public class StandardElevator implements Elevator {
     }
 
     @Override
-    public void makeStep(LinkedHashSet<ElevatorTask> waitingTasks) {
+    public void makeStep() {
         if (this.currentFloor == this.destinationFloor) {
             if(this.direction != ElevatorDirection.Idle)
                 logger.debug("Elevator id: " + this.id + " reached destination");
@@ -125,13 +125,6 @@ public class StandardElevator implements Elevator {
                 this.direction = ElevatorDirection.Idle;
                 logger.debug("Elevator id: " + this.id + " is now Idle");
             }
-
-            if(this.tasks.isEmptyQueue(this.direction) && !waitingTasks.isEmpty())
-            {
-                logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");
-                this.direction = processWaitingTasks(waitingTasks);
-                logger.debug("Elevator id: " + this.id + " new direction: " + this.direction);
-            }
         }
 
         if (this.direction == ElevatorDirection.Up) {
@@ -139,22 +132,6 @@ public class StandardElevator implements Elevator {
         } else if (this.direction == ElevatorDirection.Down) {
             this.currentFloor--;
         }
-    }
-
-    private ElevatorDirection processWaitingTasks(LinkedHashSet<ElevatorTask> waitingRequests)
-    {
-        if(waitingRequests.isEmpty()) return ElevatorDirection.Idle;
-
-        var firstRequest = waitingRequests.removeFirst();
-        this.direction = determineDirection(this.currentFloor, firstRequest.currentFloor());
-        List<ElevatorTask> processedRequests = waitingRequests.stream()
-                .filter(x -> x.direction() == this.direction && isFloorInRange(x.currentFloor()))
-                .peek(x -> addRequest(x.currentFloor()))
-                .toList();
-
-        processedRequests.forEach(waitingRequests::remove);
-        addRequest(firstRequest.currentFloor());
-        return this.direction;
     }
     private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
         return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;

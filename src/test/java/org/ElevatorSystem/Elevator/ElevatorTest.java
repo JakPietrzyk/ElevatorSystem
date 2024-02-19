@@ -41,7 +41,7 @@ class ElevatorTest {
         int startingCurrentFloor = elevator.getCurrentFloor();
         String input = "n\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        elevator.makeStep(new LinkedHashSet<>());
+        elevator.makeStep();
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor);
         assertEquals(elevator.getCurrentFloor(), elevator.getDestinationFloor());
@@ -51,7 +51,7 @@ class ElevatorTest {
     void Make_Step_Up_Elevator_Should_Increment_Current_Floor() {
         int startingCurrentFloor = elevator.getCurrentFloor();
         elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
-        elevator.makeStep(new LinkedHashSet<>());
+        elevator.makeStep();
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor + 1);
         assertEquals(ElevatorDirection.Up, elevator.getDirection());

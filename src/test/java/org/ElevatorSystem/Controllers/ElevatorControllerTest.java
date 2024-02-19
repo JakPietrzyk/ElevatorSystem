@@ -267,6 +267,7 @@ class ElevatorControllerTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         elevatorControllerWithSingleElevator.step();
         elevatorControllerWithSingleElevator.step();
+        elevatorControllerWithSingleElevator.step();
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         assertEquals(1, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
         assertEquals(ElevatorDirection.Down, elevatorControllerWithSingleElevator.status().getFirst().direction());

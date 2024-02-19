@@ -46,8 +46,12 @@ public class ElevatorManager implements Manager {
     public void makeStep() {
         for(var elevator: this.elevators)
         {
-            elevator.makeStep(this.waitingRequests);
+            elevator.makeStep();
         }
+        var previousWaitingRequests = this.waitingRequests;
+        this.waitingRequests = new LinkedHashSet<>();
+        previousWaitingRequests
+                .forEach(request -> addRequest(request.currentFloor(), request.direction()));
     }
 
     @Override

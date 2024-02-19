@@ -13,7 +13,7 @@ public interface Elevator {
     ElevatorDirection getDirection();
     void addRequest(int floor);
     void addRequestInside(int floor);
-    void makeStep(LinkedHashSet<ElevatorTask> waitingTasks);
+    void makeStep();
     void update(int floor, ElevatorDirection direction);
     ElevatorStatus status();
     boolean isFloorInRange(int floor);
