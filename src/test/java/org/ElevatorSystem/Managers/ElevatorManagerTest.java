@@ -12,13 +12,13 @@ class ElevatorManagerTest {
     ElevatorManager elevatorManager;
     @BeforeEach
     void setUp() {
-        elevatorManager = new ElevatorManager(1);
+        elevatorManager = new ElevatorManager(1, -1, 5);
     }
 
     @Test
     public void AddRequest_Adds_Request_To_Closer_Elevator()
     {
-        ElevatorManager elevatorManagerWithTwoElevators = new ElevatorManager(2);
+        ElevatorManager elevatorManagerWithTwoElevators = new ElevatorManager(2, -1, 5);
         int firstElevatorId = elevatorManagerWithTwoElevators.status().getFirst().id();
         elevatorManagerWithTwoElevators.update(firstElevatorId, 5, ElevatorDirection.Idle);
         elevatorManagerWithTwoElevators.addRequest(1, ElevatorDirection.Up);

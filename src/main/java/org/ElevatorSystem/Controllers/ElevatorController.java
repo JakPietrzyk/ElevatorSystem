@@ -13,9 +13,9 @@ public class ElevatorController implements ElevatorSystem {
     private static final Logger logger = LoggerFactory.getLogger(ElevatorController.class);
     private final ElevatorManager elevatorManager;
 
-    public ElevatorController(int numberOfElevators)
+    public ElevatorController(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor)
     {
-        elevatorManager = new ElevatorManager(numberOfElevators);
+        elevatorManager = new ElevatorManager(numberOfElevators, lowestPossibleFloor, highestPossibleFloor);
     }
     @Override
     public void pickup(int floor, ElevatorDirection direction) {
@@ -27,6 +27,7 @@ public class ElevatorController implements ElevatorSystem {
         elevatorManager.update(elevatorId, floor, direction);
     }
 
+    @Override
     public void addRequestInsideElevator(int elevatorId, int floor)
     {
         elevatorManager.addRequestInsideElevator(elevatorId, floor);

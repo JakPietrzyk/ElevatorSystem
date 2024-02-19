@@ -17,10 +17,10 @@ public class ElevatorManager implements Manager {
     private ArrayList<Elevator> elevators;
     private static int lastElevatorId;
     private int numberOfElevators;
-    private int lowestPossibleFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
-    private int highestPossibleFloor = ElevatorSettings.HIGHEST_FLOOR_NUMBER;
+    private final int lowestPossibleFloor;
+    private final int highestPossibleFloor;
     private LinkedHashSet<ElevatorTask> waitingRequests;
-    public ElevatorManager(int numberOfElevators)
+    public ElevatorManager(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor)
     {
         this.elevators = new ArrayList<>();
         for(int i = 0; i < numberOfElevators; i++)
@@ -29,6 +29,8 @@ public class ElevatorManager implements Manager {
         }
         this.numberOfElevators = numberOfElevators;
         this.waitingRequests = new LinkedHashSet<>();
+        this.lowestPossibleFloor = lowestPossibleFloor;
+        this.highestPossibleFloor = highestPossibleFloor;
     }
 
     @Override

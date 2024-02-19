@@ -15,8 +15,8 @@ class ElevatorControllerTest {
     ElevatorController elevatorControllerWithTwoElevators;
     @BeforeEach
     void setUp() {
-        elevatorControllerWithSingleElevator = new ElevatorController(1);
-        elevatorControllerWithTwoElevators = new ElevatorController(2);
+        elevatorControllerWithSingleElevator = new ElevatorController(1, -1, 5);
+        elevatorControllerWithTwoElevators = new ElevatorController(2, -1 ,5);
     }
 
     @Test
