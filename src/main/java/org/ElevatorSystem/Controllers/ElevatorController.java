@@ -1,5 +1,8 @@
-package org.example;
+package org.ElevatorSystem.Controllers;
 
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
+import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
+import org.ElevatorSystem.Managers.ElevatorManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

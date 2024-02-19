@@ -1,5 +1,11 @@
-package org.example;
-import constants.ElevatorSettings;
+package org.ElevatorSystem.Elevator;
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
+import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
+import org.ElevatorSystem.Elevator.Models.ElevatorTask;
+import org.ElevatorSystem.Managers.ElevatorManager;
+import org.ElevatorSystem.Managers.ElevatorQueueManager;
+import org.ElevatorSystem.Constants.ElevatorSettings;
+import org.ElevatorSystem.Managers.QueueManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,18 +17,24 @@ public class Elevator {
     private int currentFloor;
     private int destinationFloor;
     private ElevatorDirection direction;
-    private ElevatorQueueManager tasks;
+    private QueueManager tasks;
+
     public Elevator(int id)
+    {
+        this(id, new ElevatorQueueManager());
+    }
+
+    public Elevator(int id, QueueManager queueManager)
     {
         this.id = id;
         this.currentFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
         this.destinationFloor = this.currentFloor;
-        this.tasks = new ElevatorQueueManager();
+        this.tasks = queueManager;
         this.direction = ElevatorDirection.Idle;
     }
-    public Elevator(int id, int currentFloor)
+    public Elevator(int id, int currentFloor, QueueManager queueManager)
     {
-        this(id);
+        this(id, queueManager);
         this.currentFloor = currentFloor;
         this.destinationFloor = this.currentFloor;
     }
@@ -38,10 +50,6 @@ public class Elevator {
 
     public ElevatorDirection getDirection() {
         return direction;
-    }
-
-    public PriorityQueue<Integer> getTasks(ElevatorDirection direction) {
-        return this.tasks.getTasks(direction);
     }
 
     public int getCurrentFloor()
@@ -63,7 +71,7 @@ public class Elevator {
         {
             this.direction = ElevatorDirection.Idle;
         }
-        tasks.addRequestInside(floor, this.currentFloor, this.getDirection());
+        tasks.addRequest(floor, this.currentFloor, this.getDirection());
         if(this.direction == ElevatorDirection.Idle && !this.tasks.isEmptyQueue(this.direction))
         {
             this.destinationFloor = this.tasks.getTask(this.direction);
@@ -77,12 +85,25 @@ public class Elevator {
 
     public void checkAndAdjustDestination(ElevatorDirection direction)
     {
-        var elevatorQueue = this.tasks.getTasks(direction);
-        if(elevatorQueue.isEmpty()) return;
-        int mayBeNewDestination = elevatorQueue.peek();
+        int mayBeNewDestination;
+        switch (direction)
+        {
+            case Up -> {
+                if(this.tasks.isEmptyUpQueue()) return;
+                mayBeNewDestination = this.tasks.peekTask(direction);
+            }
+            case Down -> {
+                if(this.tasks.isEmptyDownQueue()) return;
+                mayBeNewDestination = this.tasks.peekTask(direction);
+            }
+            default -> {
+                return;
+            }
+        }
+
         if(Math.abs(this.currentFloor - mayBeNewDestination) < Math.abs(this.currentFloor - this.destinationFloor))
         {
-            this.tasks.addRequestInside(this.destinationFloor, this.currentFloor, this.direction);
+            this.tasks.addRequest(this.destinationFloor, this.currentFloor, this.direction);
             this.destinationFloor = this.tasks.getTask(this.direction);
         }
 
@@ -94,7 +115,7 @@ public class Elevator {
         {
             this.direction = ElevatorDirection.Idle;
         }
-        tasks.addRequestInside(floor, this.currentFloor, this.direction);
+        tasks.addRequest(floor, this.currentFloor, this.direction);
         if(this.direction == ElevatorDirection.Idle && !this.tasks.isEmptyQueue(this.direction))
         {
             this.destinationFloor = this.tasks.getTask(this.direction);
@@ -147,14 +168,14 @@ public class Elevator {
         if(waitingRequests.isEmpty()) return ElevatorDirection.Idle;
 
         var firstRequest = waitingRequests.getFirst();
-        this.direction = determineDirection(this.currentFloor, firstRequest.getCurrentFloor());
+        this.direction = determineDirection(this.currentFloor, firstRequest.currentFloor());
         waitingRequests.stream()
-                .filter(x -> x.getDirection() == this.direction
-                        && IsFloorInRange(x.getCurrentFloor()))
-                .forEach(x -> addRequest(x.getCurrentFloor()));
-        if(this.direction != firstRequest.getDirection())
+                .filter(x -> x.direction() == this.direction
+                        && IsFloorInRange(x.currentFloor()))
+                .forEach(x -> addRequest(x.currentFloor()));
+        if(this.direction != firstRequest.direction())
         {
-            addRequest(firstRequest.getCurrentFloor());
+            addRequest(firstRequest.currentFloor());
         }
         return this.direction;
     }

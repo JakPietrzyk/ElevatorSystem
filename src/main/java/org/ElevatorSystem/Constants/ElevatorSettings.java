@@ -1,4 +1,4 @@
-package constants;
+package org.ElevatorSystem.Constants;
 
 public class ElevatorSettings {
     public static final int LOWEST_FLOOR_NUMBER = -1;

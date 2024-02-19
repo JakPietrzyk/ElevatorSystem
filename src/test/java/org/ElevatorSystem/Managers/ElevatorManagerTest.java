@@ -1,9 +1,8 @@
-package org.example;
+package org.ElevatorSystem.Managers;
 
+import org.ElevatorSystem.Managers.ElevatorManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ElevatorManagerTest {
     ElevatorManager elevatorManager;

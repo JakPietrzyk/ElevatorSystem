@@ -1,8 +1,10 @@
-package org.example;
+package org.ElevatorSystem.Managers;
+
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 
 import java.util.*;
 
-public class ElevatorQueueManager {
+public class ElevatorQueueManager implements QueueManager {
     private PriorityQueue<Integer> upQueue;
     private PriorityQueue<Integer> downQueue;
     public ElevatorQueueManager()
@@ -10,23 +12,8 @@ public class ElevatorQueueManager {
         this.upQueue = new PriorityQueue<>();
         this.downQueue = new PriorityQueue<>(Comparator.reverseOrder());
     }
-    public PriorityQueue<Integer> getTasks(ElevatorDirection direction)
-    {
-        switch (direction)
-        {
-            case Up -> {
-                return this.upQueue;
-            }
-            case Down -> {
-                return this.downQueue;
-            }
-            default -> {
-                return new PriorityQueue<>();
-            }
-        }
-    }
 
-    public void addRequestInside(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
+    public void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
     {
         if(currentElevatorFloor == floor) return;
         switch (elevatorDirection)
@@ -44,7 +31,7 @@ public class ElevatorQueueManager {
                 }
             }
             case Idle ->
-                addRequestInside(floor, currentElevatorFloor, determineDirection(currentElevatorFloor, floor));
+                addRequest(floor, currentElevatorFloor, determineDirection(currentElevatorFloor, floor));
         }
     }
 
@@ -69,6 +56,25 @@ public class ElevatorQueueManager {
         }
         return null;
     }
+
+    public Integer peekTask(ElevatorDirection direction)
+    {
+        switch (direction)
+        {
+            case Up -> {
+                return this.upQueue.peek();
+            }
+            case Down -> {
+                return this.downQueue.peek();
+            }
+            case Idle -> {
+                if(!this.upQueue.isEmpty()) return this.upQueue.peek();
+                else if(!this.downQueue.isEmpty()) return this.downQueue.peek();
+            }
+        }
+        return null;
+    }
+
     public boolean isAnyTask()
     {
         return !this.upQueue.isEmpty() || !this.downQueue.isEmpty();

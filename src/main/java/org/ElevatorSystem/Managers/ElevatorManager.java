@@ -1,12 +1,16 @@
-package org.example;
+package org.ElevatorSystem.Managers;
 
-import constants.ElevatorSettings;
+import org.ElevatorSystem.Elevator.Elevator;
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
+import org.ElevatorSystem.Elevator.Models.ElevatorTask;
+import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
+import org.ElevatorSystem.Constants.ElevatorSettings;
 
 import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ElevatorManager implements Manager{
+public class ElevatorManager implements Manager {
     private ArrayList<Elevator> elevators;
     private static int lastElevatorId;
     private int numberOfElevators;
@@ -18,7 +22,7 @@ public class ElevatorManager implements Manager{
         this.elevators = new ArrayList<>();
         for(int i = 0; i < numberOfElevators; i++)
         {
-            this.elevators.add(new Elevator(lastElevatorId++));
+            this.elevators.add(new Elevator(lastElevatorId++, new ElevatorQueueManager()));
         }
         this.numberOfElevators = numberOfElevators;
         this.waitingRequests = new ArrayList<>();
@@ -58,34 +62,31 @@ public class ElevatorManager implements Manager{
             }
         }
 
-        int bestElevatorIndex = getBestElevatorIndex(floor);
-        if(bestElevatorIndex != -1)
-        {
-            elevators.get(bestElevatorIndex).addRequest(floor);
-        }
-        else
-        {
+        Optional<Elevator> bestElevator = getBestElevator(floor);
+        if (bestElevator.isPresent()) {
+            bestElevator.get().addRequest(floor);
+        } else {
             this.waitingRequests.add(new ElevatorTask(floor, direction));
         }
     }
 
-    private int getBestElevatorIndex(int floor) {
-        int bestElevatorIndex = -1;
+    private Optional<Elevator> getBestElevator(int floor) {
+        Elevator bestElevator = null;
         int lowestDistance = Integer.MAX_VALUE;
-        for(int i = 0; i < elevators.size(); i++)
+        for(Elevator elevator :elevators)
         {
-            Elevator elevator = elevators.get(i);
-            if(elevator.getDirection() == ElevatorDirection.Idle )
+            if(elevator.getDirection() == ElevatorDirection.Idle)
             {
                 int distance = Math.abs(floor - elevator.getCurrentFloor());
                 if(lowestDistance > distance)
                 {
                     lowestDistance = distance;
-                    bestElevatorIndex = i;
+                    bestElevator = elevator;
                 }
             }
         }
-        return bestElevatorIndex;
+
+        return Optional.ofNullable(bestElevator);
     }
 
     public void addRequestInsideElevator(int elevatorId ,int floor)
@@ -107,16 +108,11 @@ public class ElevatorManager implements Manager{
         getElevatorById(elevatorId).update(floor, direction);
     }
 
-    private Elevator getElevatorById(int elevatorId)
-    {
-        Optional<Elevator> elevatorOptional = elevators.stream()
+    private Elevator getElevatorById(int elevatorId) {
+        return elevators.stream()
                 .filter(elevator -> elevator.getId() == elevatorId)
-                .findFirst();
-        if (elevatorOptional.isPresent()) {
-            return elevatorOptional.get();
-        } else {
-            throw new RuntimeException("Invalid elevatorId");
-        }
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Invalid elevatorId"));
     }
 
     private boolean isRequestValid(int currentFloor)

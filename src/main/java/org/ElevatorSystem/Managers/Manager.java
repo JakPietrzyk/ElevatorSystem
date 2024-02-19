@@ -1,4 +1,6 @@
-package org.example;
+package org.ElevatorSystem.Managers;
+
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 
 public interface Manager {
     void makeStep();

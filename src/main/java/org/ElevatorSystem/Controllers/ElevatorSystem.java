@@ -1,4 +1,7 @@
-package org.example;
+package org.ElevatorSystem.Controllers;
+
+import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
+import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 
 import java.util.ArrayList;
 
