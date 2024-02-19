@@ -60,7 +60,7 @@ public class ElevatorManager implements Manager {
         }
         for (Elevator elevator : elevators) {
             ElevatorDirection elevatorDirection = elevator.getDirection();
-            if (elevatorDirection == direction &&  elevator.IsFloorInRange(floor)) {
+            if (elevatorDirection == direction &&  elevator.isFloorInRange(floor)) {
                 elevator.addRequest(floor);
                 return;
             }
@@ -134,10 +134,5 @@ public class ElevatorManager implements Manager {
     {
         return currentFloor <= highestPossibleFloor
                 && lowestPossibleFloor <= currentFloor;
-    }
-
-    public boolean isWaitingRequestsEmpty()
-    {
-        return this.waitingRequests.isEmpty();
     }
 }

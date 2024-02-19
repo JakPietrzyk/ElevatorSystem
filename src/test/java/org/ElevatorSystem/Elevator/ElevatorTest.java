@@ -16,7 +16,8 @@ class ElevatorTest {
     private StandardElevator elevator;
     @BeforeEach
     void setUp() {
-        this.elevator = new StandardElevator(1,0, new ElevatorQueueManager());
+        this.elevator = new StandardElevator(1, new ElevatorQueueManager());
+        this.elevator.update(0, ElevatorDirection.Idle);
     }
 
     @Test
@@ -59,20 +60,20 @@ class ElevatorTest {
 
     @Test
     void IsFloorInRange_Idle_Elevator() {
-        assertTrue(elevator.IsFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
-        assertTrue(elevator.IsFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
-        assertTrue(elevator.IsFloorInRange(elevator.getCurrentFloor()));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(elevator.getCurrentFloor()));
     }
     @Test
     void IsFloorInRange_Up_Elevator() {
         elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
-        assertTrue(elevator.IsFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
-        assertFalse(elevator.IsFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
+        assertFalse(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
     }
     @Test
     void IsFloorInRange_Down_Elevator() {
         elevator.addRequest(ElevatorSettings.LOWEST_FLOOR_NUMBER);
-        assertTrue(elevator.IsFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
-        assertFalse(elevator.IsFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
+        assertFalse(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
     }
 }

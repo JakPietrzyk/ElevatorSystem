@@ -294,26 +294,4 @@ class ElevatorControllerTest {
         assertEquals(-1, elevatorControllerWithTwoElevators.status().getFirst().destinationFloor());
         assertEquals(ElevatorDirection.Down, elevatorControllerWithTwoElevators.status().getFirst().direction());
     }
-
-    @Test
-    void Elevators_On_1_Floor_Pickup_4_Request_From_Console_Minus1_Floor_Should_One_Elevator_Visit_4_Minus1()
-    {
-        int firstElevatorId = elevatorControllerWithTwoElevators.status().getFirst().id();
-        int secondElevatorId = elevatorControllerWithTwoElevators.status().getLast().id();
-        elevatorControllerWithTwoElevators.update(firstElevatorId, 1, ElevatorDirection.Idle);
-        elevatorControllerWithTwoElevators.update(secondElevatorId, 1, ElevatorDirection.Idle);
-        elevatorControllerWithTwoElevators.pickup(4, ElevatorDirection.Down);
-        assertEquals(ElevatorDirection.Up, elevatorControllerWithTwoElevators.status().getFirst().direction());
-        assertEquals(ElevatorDirection.Idle, elevatorControllerWithTwoElevators.status().getLast().direction());
-        assertEquals(4, elevatorControllerWithTwoElevators.status().getFirst().destinationFloor());
-        elevatorControllerWithTwoElevators.step();
-        elevatorControllerWithTwoElevators.step();
-        elevatorControllerWithTwoElevators.step();
-        String input = "-1\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        elevatorControllerWithTwoElevators.step();
-        elevatorControllerWithTwoElevators.step();
-        assertEquals(-1, elevatorControllerWithTwoElevators.status().getFirst().destinationFloor());
-        assertEquals(ElevatorDirection.Down, elevatorControllerWithTwoElevators.status().getFirst().direction());
-    }
 }

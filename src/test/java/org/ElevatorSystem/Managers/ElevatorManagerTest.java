@@ -16,13 +16,6 @@ class ElevatorManagerTest {
     }
 
     @Test
-    public void AddRequest_Adds_Request_To_WaitingRequests_If_No_Elevator_Available() {
-        elevatorManager.addRequest(4, ElevatorDirection.Up);
-        elevatorManager.addRequest(0, ElevatorDirection.Down);
-        assertFalse(elevatorManager.isWaitingRequestsEmpty());
-    }
-
-    @Test
     public void AddRequest_Adds_Request_To_Closer_Elevator()
     {
         ElevatorManager elevatorManagerWithTwoElevators = new ElevatorManager(2);

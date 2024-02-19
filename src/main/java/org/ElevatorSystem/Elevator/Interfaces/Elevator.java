@@ -16,5 +16,5 @@ public interface Elevator {
     void makeStep(LinkedHashSet<ElevatorTask> waitingTasks);
     void update(int floor, ElevatorDirection direction);
     ElevatorStatus status();
-    boolean IsFloorInRange(int floor);
+    boolean isFloorInRange(int floor);
 }

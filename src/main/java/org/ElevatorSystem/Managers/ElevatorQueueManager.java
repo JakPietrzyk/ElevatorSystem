@@ -28,26 +28,24 @@ public class ElevatorQueueManager implements QueueManager {
     }
 
     @Override
-    public Integer getTask(ElevatorDirection direction)
+    public Optional<Integer> getNextDestinationFloor(ElevatorDirection direction)
     {
-        switch (direction)
+        return switch (direction)
         {
-            case Up -> {
-                return this.upQueue.poll();
-            }
-            case Down -> {
-                return this.downQueue.poll();
-            }
+            case Up -> Optional.ofNullable(this.upQueue.poll());
+            case Down -> Optional.ofNullable(this.downQueue.poll());
             case Idle -> {
-                if(!this.upQueue.isEmpty()) return this.upQueue.poll();
-                else if(!this.downQueue.isEmpty()) return this.downQueue.poll();
+                Optional<Integer> task;
+                if(!this.upQueue.isEmpty()) task = Optional.ofNullable(this.upQueue.poll());
+                else if(!this.downQueue.isEmpty()) task = Optional.ofNullable(this.downQueue.poll());
+                else task = Optional.empty();
+                yield task;
             }
-        }
-        return null;
+        };
     }
 
     @Override
-    public Integer peekTask(ElevatorDirection direction)
+    public Integer peekNextDestinationFloor(ElevatorDirection direction)
     {
         switch (direction)
         {
