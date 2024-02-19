@@ -4,8 +4,7 @@ import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Elevator.Models.ElevatorTask;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 
 public interface Elevator {
     int getId();
@@ -14,8 +13,8 @@ public interface Elevator {
     ElevatorDirection getDirection();
     void addRequest(int floor);
     void addRequestInside(int floor);
-    void makeStep(LinkedList<ElevatorTask> waitingTasks);
+    void makeStep(LinkedHashSet<ElevatorTask> waitingTasks);
     void update(int floor, ElevatorDirection direction);
-    public ElevatorStatus status();
+    ElevatorStatus status();
     boolean IsFloorInRange(int floor);
 }

@@ -39,6 +39,7 @@ public class StandardElevator implements Elevator {
         this.currentFloor = currentFloor;
         this.destinationFloor = this.currentFloor;
     }
+    @Override
     public ElevatorStatus status()
     {
         return new ElevatorStatus(this.id, this.currentFloor, this.destinationFloor, this.direction);
@@ -66,6 +67,7 @@ public class StandardElevator implements Elevator {
         return id;
     }
 
+    @Override
     public void addRequest(int floor)
     {
         if(tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor)
@@ -84,7 +86,7 @@ public class StandardElevator implements Elevator {
         }
     }
 
-    public void checkAndAdjustDestination(ElevatorDirection direction)
+    private void checkAndAdjustDestination(ElevatorDirection direction)
     {
         int mayBeNewDestination;
         switch (direction)
@@ -110,6 +112,7 @@ public class StandardElevator implements Elevator {
 
     }
 
+    @Override
     public void addRequestInside(int floor)
     {
         if(tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor)
@@ -124,7 +127,8 @@ public class StandardElevator implements Elevator {
         }
     }
 
-    public void makeStep(LinkedList<ElevatorTask> waitingTasks) {
+    @Override
+    public void makeStep(LinkedHashSet<ElevatorTask> waitingTasks) {
         if (this.currentFloor == this.destinationFloor) {
             if(this.direction != ElevatorDirection.Idle) logger.debug("Elevator id: " + this.id + " reached destination");
 
@@ -146,6 +150,7 @@ public class StandardElevator implements Elevator {
             if (!this.tasks.isEmptyQueue(this.direction)) {
                 this.destinationFloor = this.tasks.getTask(this.direction);
                 logger.debug("Elevator id: " + this.id + " is setting new destination: " + this.destinationFloor + " " + this.direction);
+                return;
             } else if (this.tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor && this.direction != ElevatorDirection.Idle){
                 this.direction = ElevatorDirection.Idle;
                 logger.debug("Elevator id: " + this.id + " is now Idle");
@@ -166,27 +171,25 @@ public class StandardElevator implements Elevator {
         }
     }
 
-    private ElevatorDirection processWaitingTasks(LinkedList<ElevatorTask> waitingRequests)
+    private ElevatorDirection processWaitingTasks(LinkedHashSet<ElevatorTask> waitingRequests)
     {
         if(waitingRequests.isEmpty()) return ElevatorDirection.Idle;
 
-        var firstRequest = waitingRequests.poll();
+        var firstRequest = waitingRequests.removeFirst();
         this.direction = determineDirection(this.currentFloor, firstRequest.currentFloor());
         List<ElevatorTask> processedRequests = waitingRequests.stream()
                 .filter(x -> x.direction() == this.direction && IsFloorInRange(x.currentFloor()))
                 .peek(x -> addRequest(x.currentFloor()))
                 .toList();
 
-        waitingRequests.removeAll(processedRequests);
-//        if(this.direction != firstRequest.direction())
-//        {
-            addRequest(firstRequest.currentFloor());
-//        }
+        processedRequests.forEach(waitingRequests::remove);
+        addRequest(firstRequest.currentFloor());
         return this.direction;
     }
     private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
         return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
     }
+    @Override
     public boolean IsFloorInRange(int floor)
     {
         switch (this.direction)
@@ -202,6 +205,7 @@ public class StandardElevator implements Elevator {
         return true;
     }
 
+    @Override
     public void update(int floor, ElevatorDirection direction)
     {
         this.currentFloor = floor;

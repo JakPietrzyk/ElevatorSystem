@@ -105,7 +105,7 @@ class ElevatorControllerTest {
     }
 
     @Test
-    void Elevators_On_Same_Floor_Duplicated_Pickup_To_Down_Direction_Should_One_Elevator_Get_One_Request()
+    void Elevators_On_Same_Floor_Duplicated_Pickup_To_Down_Direction_Should_Both_Elevators_Get_One_Request()
     {
         int firstElevatorId = elevatorControllerWithTwoElevators.status().getFirst().id();
         int secondElevatorId = elevatorControllerWithTwoElevators.status().getLast().id();
@@ -114,9 +114,9 @@ class ElevatorControllerTest {
         elevatorControllerWithTwoElevators.pickup(3, ElevatorDirection.Down);
         elevatorControllerWithTwoElevators.pickup(3, ElevatorDirection.Down);
         assertEquals(ElevatorDirection.Up, elevatorControllerWithTwoElevators.status().getFirst().direction());
-        assertEquals(ElevatorDirection.Idle, elevatorControllerWithTwoElevators.status().getLast().direction());
+        assertEquals(ElevatorDirection.Up, elevatorControllerWithTwoElevators.status().getLast().direction());
         assertEquals(3, elevatorControllerWithTwoElevators.status().getFirst().destinationFloor());
-        //brak dostępu do kolejki elevator, żeby sprawdzić liste requestów
+        assertEquals(3, elevatorControllerWithTwoElevators.status().getLast().destinationFloor());
     }
 
     @Test
@@ -213,7 +213,7 @@ class ElevatorControllerTest {
         elevatorControllerWithTwoElevators.step();
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         elevatorControllerWithTwoElevators.step();
-        elevatorControllerWithTwoElevators.step();
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
     }
 
     @Test
@@ -236,6 +236,7 @@ class ElevatorControllerTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         elevatorControllerWithSingleElevator.step();
         System.setIn(new ByteArrayInputStream(input.getBytes()));
+        elevatorControllerWithSingleElevator.step();
         elevatorControllerWithSingleElevator.step();
         assertEquals(4, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
         assertEquals(ElevatorDirection.Down, elevatorControllerWithSingleElevator.status().getFirst().direction());

@@ -10,9 +10,7 @@ import org.ElevatorSystem.Managers.Interfaces.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 public class ElevatorManager implements Manager {
     private static final Logger logger = LoggerFactory.getLogger(ElevatorManager.class);
@@ -21,7 +19,7 @@ public class ElevatorManager implements Manager {
     private int numberOfElevators;
     private int lowestPossibleFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
     private int highestPossibleFloor = ElevatorSettings.HIGHEST_FLOOR_NUMBER;
-    private LinkedList<ElevatorTask> waitingRequests;
+    private LinkedHashSet<ElevatorTask> waitingRequests;
     public ElevatorManager(int numberOfElevators)
     {
         this.elevators = new ArrayList<>();
@@ -30,9 +28,10 @@ public class ElevatorManager implements Manager {
             this.elevators.add(new StandardElevator(lastElevatorId++, new ElevatorQueueManager()));
         }
         this.numberOfElevators = numberOfElevators;
-        this.waitingRequests = new LinkedList<>();
+        this.waitingRequests = new LinkedHashSet<>();
     }
 
+    @Override
     public ArrayList<ElevatorStatus> status()
     {
         ArrayList<ElevatorStatus> result = new ArrayList<>();
@@ -135,5 +134,10 @@ public class ElevatorManager implements Manager {
     {
         return currentFloor <= highestPossibleFloor
                 && lowestPossibleFloor <= currentFloor;
+    }
+
+    public boolean isWaitingRequestsEmpty()
+    {
+        return this.waitingRequests.isEmpty();
     }
 }

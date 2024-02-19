@@ -14,6 +14,7 @@ public class ElevatorQueueManager implements QueueManager {
         this.downQueue = new PriorityQueue<>(Comparator.reverseOrder());
     }
 
+    @Override
     public void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
     {
         if(currentElevatorFloor == floor) return;
@@ -40,6 +41,7 @@ public class ElevatorQueueManager implements QueueManager {
         return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
     }
 
+    @Override
     public Integer getTask(ElevatorDirection direction)
     {
         switch (direction)
@@ -58,6 +60,7 @@ public class ElevatorQueueManager implements QueueManager {
         return null;
     }
 
+    @Override
     public Integer peekTask(ElevatorDirection direction)
     {
         switch (direction)
@@ -76,10 +79,7 @@ public class ElevatorQueueManager implements QueueManager {
         return null;
     }
 
-    public boolean isAnyTask()
-    {
-        return !this.upQueue.isEmpty() || !this.downQueue.isEmpty();
-    }
+    @Override
     public boolean isEmptyQueue(ElevatorDirection direction)
     {
         switch (direction)
@@ -95,11 +95,12 @@ public class ElevatorQueueManager implements QueueManager {
             }
         }
     }
-
+    @Override
     public boolean isEmptyUpQueue()
     {
         return this.upQueue.isEmpty();
     }
+    @Override
     public boolean isEmptyDownQueue()
     {
         return this.downQueue.isEmpty();
