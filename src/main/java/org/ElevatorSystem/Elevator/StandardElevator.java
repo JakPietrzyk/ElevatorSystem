@@ -82,7 +82,7 @@ public class StandardElevator implements Elevator {
 
     private void checkAndAdjustDestination(ElevatorDirection direction)
     {
-        int mayBeNewDestination;
+        Optional<Integer> mayBeNewDestination;
         switch (direction)
         {
             case Up -> {
@@ -97,8 +97,9 @@ public class StandardElevator implements Elevator {
                 return;
             }
         }
-
-        if(Math.abs(this.currentFloor - mayBeNewDestination) < Math.abs(this.currentFloor - this.destinationFloor))
+        if(mayBeNewDestination.isEmpty())
+            return;
+        if(Math.abs(this.currentFloor - mayBeNewDestination.get()) < Math.abs(this.currentFloor - this.destinationFloor))
         {
             this.tasks.addRequest(this.destinationFloor, this.currentFloor, this.direction);
             this.tasks.getNextDestinationFloor(this.direction).ifPresent(destination -> this.destinationFloor = destination);

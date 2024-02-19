@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface QueueManager {
     void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection);
     Optional<Integer> getNextDestinationFloor(ElevatorDirection direction);
-    Integer peekNextDestinationFloor(ElevatorDirection direction);
+    Optional<Integer> peekNextDestinationFloor(ElevatorDirection direction);
     boolean isEmptyQueue(ElevatorDirection direction);
     boolean isEmptyUpQueue();
     boolean isEmptyDownQueue();

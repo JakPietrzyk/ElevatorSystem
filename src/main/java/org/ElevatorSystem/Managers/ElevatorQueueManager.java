@@ -4,6 +4,8 @@ import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Managers.Interfaces.QueueManager;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ElevatorQueueManager implements QueueManager {
     private PriorityQueue<Integer> upQueue;
@@ -30,37 +32,29 @@ public class ElevatorQueueManager implements QueueManager {
     @Override
     public Optional<Integer> getNextDestinationFloor(ElevatorDirection direction)
     {
+        return acquireNextDestinationFloor(direction, PriorityQueue::poll);
+    }
+
+    @Override
+    public Optional<Integer> peekNextDestinationFloor(ElevatorDirection direction)
+    {
+        return acquireNextDestinationFloor(direction, PriorityQueue::peek);
+    }
+
+    private Optional<Integer> acquireNextDestinationFloor(ElevatorDirection direction,
+                                                          Function<PriorityQueue<Integer>, Integer> queueIntegerFunction) {
         return switch (direction)
         {
-            case Up -> Optional.ofNullable(this.upQueue.poll());
-            case Down -> Optional.ofNullable(this.downQueue.poll());
+            case Up -> Optional.ofNullable(queueIntegerFunction.apply(this.upQueue));
+            case Down -> Optional.ofNullable(queueIntegerFunction.apply(this.downQueue));
             case Idle -> {
                 Optional<Integer> task;
-                if(!this.upQueue.isEmpty()) task = Optional.ofNullable(this.upQueue.poll());
-                else if(!this.downQueue.isEmpty()) task = Optional.ofNullable(this.downQueue.poll());
+                if(!this.upQueue.isEmpty()) task = Optional.ofNullable(queueIntegerFunction.apply(this.upQueue));
+                else if(!this.downQueue.isEmpty()) task = Optional.ofNullable(queueIntegerFunction.apply(this.downQueue));
                 else task = Optional.empty();
                 yield task;
             }
         };
-    }
-
-    @Override
-    public Integer peekNextDestinationFloor(ElevatorDirection direction)
-    {
-        switch (direction)
-        {
-            case Up -> {
-                return this.upQueue.peek();
-            }
-            case Down -> {
-                return this.downQueue.peek();
-            }
-            case Idle -> {
-                if(!this.upQueue.isEmpty()) return this.upQueue.peek();
-                else if(!this.downQueue.isEmpty()) return this.downQueue.peek();
-            }
-        }
-        return null;
     }
 
     @Override

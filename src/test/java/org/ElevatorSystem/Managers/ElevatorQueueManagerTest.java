@@ -62,12 +62,12 @@ class ElevatorQueueManagerTest {
     @Test
     public void Peek_Up_Returns_From_UpQueue() {
         elevatorQueueManager.addRequest(5, 3, ElevatorDirection.Up);
-        assertEquals(5, elevatorQueueManager.peekNextDestinationFloor(ElevatorDirection.Up));
+        assertEquals(5, elevatorQueueManager.peekNextDestinationFloor(ElevatorDirection.Up).get());
     }
 
     @Test
     public void Peek_Down_Returns_From_DownQueue() {
         elevatorQueueManager.addRequest(3, 5, ElevatorDirection.Down);
-        assertEquals(3, elevatorQueueManager.peekNextDestinationFloor(ElevatorDirection.Down));
+        assertEquals(3, elevatorQueueManager.peekNextDestinationFloor(ElevatorDirection.Down).get());
     }
 }
