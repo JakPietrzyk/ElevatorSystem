@@ -1,6 +1,7 @@
 package org.ElevatorSystem.Managers;
 
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
+import org.ElevatorSystem.Managers.Interfaces.QueueManager;
 
 import java.util.*;
 

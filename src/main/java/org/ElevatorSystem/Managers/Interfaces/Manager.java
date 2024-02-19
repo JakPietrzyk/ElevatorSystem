@@ -1,4 +1,4 @@
-package org.ElevatorSystem.Managers;
+package org.ElevatorSystem.Managers.Interfaces;
 
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 

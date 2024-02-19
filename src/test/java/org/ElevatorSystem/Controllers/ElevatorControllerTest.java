@@ -240,4 +240,37 @@ class ElevatorControllerTest {
         assertEquals(4, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
         assertEquals(ElevatorDirection.Down, elevatorControllerWithSingleElevator.status().getFirst().direction());
     }
+
+    @Test
+    void Elevator_On_2_Going_To_0_Pickup_Down_5_3_1_Should_Visit_0_5_3_1()
+    {
+        int firstElevatorId = elevatorControllerWithSingleElevator.status().getFirst().id();
+        elevatorControllerWithSingleElevator.update(firstElevatorId, 0, ElevatorDirection.Up);
+        elevatorControllerWithSingleElevator.addRequestInsideElevator(firstElevatorId, 2);
+        elevatorControllerWithSingleElevator.pickup(5, ElevatorDirection.Down);
+        elevatorControllerWithSingleElevator.pickup(3,ElevatorDirection.Down);
+        elevatorControllerWithSingleElevator.pickup(1,ElevatorDirection.Down);
+        assertEquals(ElevatorDirection.Up, elevatorControllerWithSingleElevator.status().getFirst().direction());
+        assertEquals(2, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
+        String input = "n\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        elevatorControllerWithSingleElevator.step();
+        elevatorControllerWithSingleElevator.step();
+        elevatorControllerWithSingleElevator.step();
+        assertEquals(5, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
+        elevatorControllerWithSingleElevator.step();
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        elevatorControllerWithSingleElevator.step();
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        elevatorControllerWithSingleElevator.step();
+        elevatorControllerWithSingleElevator.step();
+        assertEquals(3, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        elevatorControllerWithSingleElevator.step();
+        elevatorControllerWithSingleElevator.step();
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        assertEquals(1, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
+        assertEquals(ElevatorDirection.Down, elevatorControllerWithSingleElevator.status().getFirst().direction());
+    }
+
 }

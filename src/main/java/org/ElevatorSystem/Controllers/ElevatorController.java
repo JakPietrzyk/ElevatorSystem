@@ -1,5 +1,6 @@
 package org.ElevatorSystem.Controllers;
 
+import org.ElevatorSystem.Controllers.Interfaces.ElevatorSystem;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Managers.ElevatorManager;
@@ -8,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class ElevatorController implements ElevatorSystem{
+public class ElevatorController implements ElevatorSystem {
     private static final Logger logger = LoggerFactory.getLogger(ElevatorController.class);
     private final ElevatorManager elevatorManager;
 

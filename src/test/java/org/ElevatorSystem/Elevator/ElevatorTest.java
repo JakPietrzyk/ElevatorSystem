@@ -1,6 +1,5 @@
 package org.ElevatorSystem.Elevator;
 
-import org.ElevatorSystem.Elevator.Elevator;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Constants.ElevatorSettings;
 import org.ElevatorSystem.Managers.ElevatorQueueManager;
@@ -9,15 +8,16 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ElevatorTest {
 
-    private Elevator elevator;
+    private StandardElevator elevator;
     @BeforeEach
     void setUp() {
-        this.elevator = new Elevator(1,0, new ElevatorQueueManager());
+        this.elevator = new StandardElevator(1,0, new ElevatorQueueManager());
     }
 
     @Test
@@ -42,7 +42,7 @@ class ElevatorTest {
         int startingCurrentFloor = elevator.getCurrentFloor();
         String input = "n\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        elevator.makeStep(new ArrayList<>());
+        elevator.makeStep(new LinkedList<>());
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor);
         assertEquals(elevator.getCurrentFloor(), elevator.getDestinationFloor());
@@ -52,7 +52,7 @@ class ElevatorTest {
     void Make_Step_Up_Elevator_Should_Increment_Current_Floor() {
         int startingCurrentFloor = elevator.getCurrentFloor();
         elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
-        elevator.makeStep(new ArrayList<>());
+        elevator.makeStep(new LinkedList<>());
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor + 1);
         assertEquals(ElevatorDirection.Up, elevator.getDirection());

@@ -1,30 +1,31 @@
 package org.ElevatorSystem.Elevator;
+import org.ElevatorSystem.Elevator.Interfaces.Elevator;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Elevator.Models.ElevatorTask;
-import org.ElevatorSystem.Managers.ElevatorManager;
 import org.ElevatorSystem.Managers.ElevatorQueueManager;
 import org.ElevatorSystem.Constants.ElevatorSettings;
-import org.ElevatorSystem.Managers.QueueManager;
+import org.ElevatorSystem.Managers.Interfaces.QueueManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class Elevator {
-    private static final Logger logger = LoggerFactory.getLogger(Elevator.class);
+public class StandardElevator implements Elevator {
+    private static final Logger logger = LoggerFactory.getLogger(StandardElevator.class);
     private final int id;
     private int currentFloor;
     private int destinationFloor;
     private ElevatorDirection direction;
     private QueueManager tasks;
 
-    public Elevator(int id)
+    public StandardElevator(int id)
     {
         this(id, new ElevatorQueueManager());
     }
 
-    public Elevator(int id, QueueManager queueManager)
+    public StandardElevator(int id, QueueManager queueManager)
     {
         this.id = id;
         this.currentFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
@@ -32,7 +33,7 @@ public class Elevator {
         this.tasks = queueManager;
         this.direction = ElevatorDirection.Idle;
     }
-    public Elevator(int id, int currentFloor, QueueManager queueManager)
+    public StandardElevator(int id, int currentFloor, QueueManager queueManager)
     {
         this(id, queueManager);
         this.currentFloor = currentFloor;
@@ -123,15 +124,10 @@ public class Elevator {
         }
     }
 
-    public void makeStep(ArrayList<ElevatorTask> waitingTasks) {
+    public void makeStep(LinkedList<ElevatorTask> waitingTasks) {
         if (this.currentFloor == this.destinationFloor) {
             if(this.direction != ElevatorDirection.Idle) logger.debug("Elevator id: " + this.id + " reached destination");
-            if(this.tasks.isEmptyQueue(this.direction) && !waitingTasks.isEmpty())
-            {
-                logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");
-                this.direction = processWaitingTasks(waitingTasks);
-                logger.debug("Elevator id: " + this.id + " new direction: " + this.direction);
-            }
+
             if(this.direction != ElevatorDirection.Idle)
             {
                 System.out.println("\tEnter destination floor number:");
@@ -154,6 +150,13 @@ public class Elevator {
                 this.direction = ElevatorDirection.Idle;
                 logger.debug("Elevator id: " + this.id + " is now Idle");
             }
+
+            if(this.tasks.isEmptyQueue(this.direction) && !waitingTasks.isEmpty())
+            {
+                logger.debug("Elevator id: " + this.id + " finished queue, fetching waiting queue");
+                this.direction = processWaitingTasks(waitingTasks);
+                logger.debug("Elevator id: " + this.id + " new direction: " + this.direction);
+            }
         }
 
         if (this.direction == ElevatorDirection.Up) {
@@ -163,20 +166,22 @@ public class Elevator {
         }
     }
 
-    private ElevatorDirection processWaitingTasks(ArrayList<ElevatorTask> waitingRequests)
+    private ElevatorDirection processWaitingTasks(LinkedList<ElevatorTask> waitingRequests)
     {
         if(waitingRequests.isEmpty()) return ElevatorDirection.Idle;
 
-        var firstRequest = waitingRequests.getFirst();
+        var firstRequest = waitingRequests.poll();
         this.direction = determineDirection(this.currentFloor, firstRequest.currentFloor());
-        waitingRequests.stream()
-                .filter(x -> x.direction() == this.direction
-                        && IsFloorInRange(x.currentFloor()))
-                .forEach(x -> addRequest(x.currentFloor()));
-        if(this.direction != firstRequest.direction())
-        {
+        List<ElevatorTask> processedRequests = waitingRequests.stream()
+                .filter(x -> x.direction() == this.direction && IsFloorInRange(x.currentFloor()))
+                .peek(x -> addRequest(x.currentFloor()))
+                .toList();
+
+        waitingRequests.removeAll(processedRequests);
+//        if(this.direction != firstRequest.direction())
+//        {
             addRequest(firstRequest.currentFloor());
-        }
+//        }
         return this.direction;
     }
     private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
@@ -194,7 +199,7 @@ public class Elevator {
                 return this.currentFloor >= floor && floor >= ElevatorSettings.LOWEST_FLOOR_NUMBER;
             }
         }
-        return true; // idle
+        return true;
     }
 
     public void update(int floor, ElevatorDirection direction)

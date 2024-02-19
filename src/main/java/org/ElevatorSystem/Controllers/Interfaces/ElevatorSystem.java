@@ -1,4 +1,4 @@
-package org.ElevatorSystem.Controllers;
+package org.ElevatorSystem.Controllers.Interfaces;
 
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;

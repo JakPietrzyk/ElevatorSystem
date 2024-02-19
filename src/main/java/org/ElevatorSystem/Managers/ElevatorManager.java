@@ -1,31 +1,36 @@
 package org.ElevatorSystem.Managers;
 
-import org.ElevatorSystem.Elevator.Elevator;
+import org.ElevatorSystem.Elevator.Interfaces.Elevator;
+import org.ElevatorSystem.Elevator.StandardElevator;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorTask;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Constants.ElevatorSettings;
+import org.ElevatorSystem.Managers.Interfaces.Manager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Optional;
 
 public class ElevatorManager implements Manager {
+    private static final Logger logger = LoggerFactory.getLogger(ElevatorManager.class);
     private ArrayList<Elevator> elevators;
     private static int lastElevatorId;
     private int numberOfElevators;
     private int lowestPossibleFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
     private int highestPossibleFloor = ElevatorSettings.HIGHEST_FLOOR_NUMBER;
-    private ArrayList<ElevatorTask> waitingRequests;
+    private LinkedList<ElevatorTask> waitingRequests;
     public ElevatorManager(int numberOfElevators)
     {
         this.elevators = new ArrayList<>();
         for(int i = 0; i < numberOfElevators; i++)
         {
-            this.elevators.add(new Elevator(lastElevatorId++, new ElevatorQueueManager()));
+            this.elevators.add(new StandardElevator(lastElevatorId++, new ElevatorQueueManager()));
         }
         this.numberOfElevators = numberOfElevators;
-        this.waitingRequests = new ArrayList<>();
+        this.waitingRequests = new LinkedList<>();
     }
 
     public ArrayList<ElevatorStatus> status()
@@ -48,12 +53,12 @@ public class ElevatorManager implements Manager {
 
     @Override
     public void addRequest(int floor, ElevatorDirection direction) {
-        if(!isRequestValid(floor))
-            try {
-                throw new InvalidAttributeValueException();
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
+        if (!isRequestValid(floor))
+        {
+            logger.error("Invalid floor: " + floor + " not in range: "
+                    + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
+            return;
+        }
         for (Elevator elevator : elevators) {
             ElevatorDirection elevatorDirection = elevator.getDirection();
             if (elevatorDirection == direction &&  elevator.IsFloorInRange(floor)) {
@@ -91,21 +96,32 @@ public class ElevatorManager implements Manager {
 
     public void addRequestInsideElevator(int elevatorId ,int floor)
     {
-        if(!isRequestValid(floor))
-            try {
-                throw new InvalidAttributeValueException();
-            } catch (InvalidAttributeValueException e) {
-                throw new RuntimeException(e);
-            }
-
-        Elevator elevator = getElevatorById(elevatorId);
-        elevator.addRequestInside(floor);
+        if (!isRequestValid(floor))
+        {
+            logger.error("Invalid floor: " + floor + " not in range: "
+                    + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
+            return;
+        }
+        try{
+            Elevator elevator = getElevatorById(elevatorId);
+            elevator.addRequestInside(floor);
+        }
+        catch (IllegalStateException ex)
+        {
+            logger.error("Invalid elevator id: " + elevatorId);
+        }
     }
 
 
     @Override
     public void update(int elevatorId, int floor, ElevatorDirection direction) {
-        getElevatorById(elevatorId).update(floor, direction);
+        try{
+            getElevatorById(elevatorId).update(floor, direction);
+        }
+        catch (IllegalStateException ex)
+        {
+            logger.error("Invalid elevator id: " + elevatorId + " update method failed");
+        }
     }
 
     private Elevator getElevatorById(int elevatorId) {
