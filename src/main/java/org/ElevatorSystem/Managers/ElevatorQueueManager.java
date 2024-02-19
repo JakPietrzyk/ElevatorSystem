@@ -73,13 +73,11 @@ public class ElevatorQueueManager implements QueueManager {
             }
         }
     }
-    @Override
-    public boolean isEmptyUpQueue()
+    private boolean isEmptyUpQueue()
     {
         return this.upQueue.isEmpty();
     }
-    @Override
-    public boolean isEmptyDownQueue()
+    private boolean isEmptyDownQueue()
     {
         return this.downQueue.isEmpty();
     }

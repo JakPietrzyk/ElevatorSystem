@@ -9,6 +9,4 @@ public interface QueueManager {
     Optional<Integer> getNextDestinationFloor(ElevatorDirection direction);
     Optional<Integer> peekNextDestinationFloor(ElevatorDirection direction);
     boolean isEmptyQueue(ElevatorDirection direction);
-    boolean isEmptyUpQueue();
-    boolean isEmptyDownQueue();
 }

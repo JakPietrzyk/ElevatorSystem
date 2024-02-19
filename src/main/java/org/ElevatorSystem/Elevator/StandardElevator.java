@@ -82,21 +82,7 @@ public class StandardElevator implements Elevator {
 
     private void checkAndAdjustDestination(ElevatorDirection direction)
     {
-        Optional<Integer> mayBeNewDestination;
-        switch (direction)
-        {
-            case Up -> {
-                if(this.tasks.isEmptyUpQueue()) return;
-                mayBeNewDestination = this.tasks.peekNextDestinationFloor(direction);
-            }
-            case Down -> {
-                if(this.tasks.isEmptyDownQueue()) return;
-                mayBeNewDestination = this.tasks.peekNextDestinationFloor(direction);
-            }
-            default -> {
-                return;
-            }
-        }
+        Optional<Integer> mayBeNewDestination = this.tasks.peekNextDestinationFloor(direction);
         if(mayBeNewDestination.isEmpty())
             return;
         if(Math.abs(this.currentFloor - mayBeNewDestination.get()) < Math.abs(this.currentFloor - this.destinationFloor))
@@ -104,7 +90,6 @@ public class StandardElevator implements Elevator {
             this.tasks.addRequest(this.destinationFloor, this.currentFloor, this.direction);
             this.tasks.getNextDestinationFloor(this.direction).ifPresent(destination -> this.destinationFloor = destination);
         }
-
     }
 
     @Override
