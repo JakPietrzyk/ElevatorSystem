@@ -5,52 +5,46 @@ import org.ElevatorSystem.Managers.Interfaces.QueueManager;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ElevatorQueueManager implements QueueManager {
-    private PriorityQueue<Integer> upQueue;
-    private PriorityQueue<Integer> downQueue;
-    public ElevatorQueueManager()
-    {
+    private final PriorityQueue<Integer> upQueue;
+    private final PriorityQueue<Integer> downQueue;
+
+    public ElevatorQueueManager() {
         this.upQueue = new PriorityQueue<>();
         this.downQueue = new PriorityQueue<>(Comparator.reverseOrder());
     }
 
     @Override
-    public void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
-    {
-        if(currentElevatorFloor == floor) return;
-        if(floor > currentElevatorFloor)
-        {
+    public void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection) {
+        if (currentElevatorFloor == floor) return;
+        if (floor > currentElevatorFloor) {
             this.upQueue.add(floor);
-        }
-        else {
+        } else {
             this.downQueue.add(floor);
         }
     }
 
     @Override
-    public Optional<Integer> getNextDestinationFloor(ElevatorDirection direction)
-    {
+    public Optional<Integer> getNextDestinationFloor(ElevatorDirection direction) {
         return acquireNextDestinationFloor(direction, PriorityQueue::poll);
     }
 
     @Override
-    public Optional<Integer> peekNextDestinationFloor(ElevatorDirection direction)
-    {
+    public Optional<Integer> peekNextDestinationFloor(ElevatorDirection direction) {
         return acquireNextDestinationFloor(direction, PriorityQueue::peek);
     }
 
     private Optional<Integer> acquireNextDestinationFloor(ElevatorDirection direction,
                                                           Function<PriorityQueue<Integer>, Integer> queueIntegerFunction) {
-        return switch (direction)
-        {
+        return switch (direction) {
             case Up -> Optional.ofNullable(queueIntegerFunction.apply(this.upQueue));
             case Down -> Optional.ofNullable(queueIntegerFunction.apply(this.downQueue));
             case Idle -> {
                 Optional<Integer> task;
-                if(!this.upQueue.isEmpty()) task = Optional.ofNullable(queueIntegerFunction.apply(this.upQueue));
-                else if(!this.downQueue.isEmpty()) task = Optional.ofNullable(queueIntegerFunction.apply(this.downQueue));
+                if (!this.upQueue.isEmpty()) task = Optional.ofNullable(queueIntegerFunction.apply(this.upQueue));
+                else if (!this.downQueue.isEmpty())
+                    task = Optional.ofNullable(queueIntegerFunction.apply(this.downQueue));
                 else task = Optional.empty();
                 yield task;
             }
@@ -58,13 +52,11 @@ public class ElevatorQueueManager implements QueueManager {
     }
 
     @Override
-    public boolean isEmptyQueue(ElevatorDirection direction)
-    {
-        switch (direction)
-        {
+    public boolean isEmptyQueue(ElevatorDirection direction) {
+        switch (direction) {
             case Up -> {
-            return this.upQueue.isEmpty();
-        }
+                return this.upQueue.isEmpty();
+            }
             case Down -> {
                 return this.downQueue.isEmpty();
             }
@@ -73,12 +65,12 @@ public class ElevatorQueueManager implements QueueManager {
             }
         }
     }
-    private boolean isEmptyUpQueue()
-    {
+
+    private boolean isEmptyUpQueue() {
         return this.upQueue.isEmpty();
     }
-    private boolean isEmptyDownQueue()
-    {
+
+    private boolean isEmptyDownQueue() {
         return this.downQueue.isEmpty();
     }
 }

@@ -4,19 +4,16 @@ import org.ElevatorSystem.Controllers.Interfaces.ElevatorSystem;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Managers.ElevatorManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class ElevatorController implements ElevatorSystem {
-    private static final Logger logger = LoggerFactory.getLogger(ElevatorController.class);
     private final ElevatorManager elevatorManager;
 
-    public ElevatorController(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor)
-    {
+    public ElevatorController(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor) {
         elevatorManager = new ElevatorManager(numberOfElevators, lowestPossibleFloor, highestPossibleFloor);
     }
+
     @Override
     public void pickup(int floor, ElevatorDirection direction) {
         elevatorManager.addRequest(floor, direction);
@@ -28,8 +25,7 @@ public class ElevatorController implements ElevatorSystem {
     }
 
     @Override
-    public void addRequestInsideElevator(int elevatorId, int floor)
-    {
+    public void addRequestInsideElevator(int elevatorId, int floor) {
         elevatorManager.addRequestInsideElevator(elevatorId, floor);
     }
 
@@ -41,6 +37,6 @@ public class ElevatorController implements ElevatorSystem {
 
     @Override
     public ArrayList<ElevatorStatus> status() {
-        return  elevatorManager.status();
+        return elevatorManager.status();
     }
 }

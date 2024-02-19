@@ -1,8 +1,8 @@
 package org.ElevatorSystem;
+
 import org.ElevatorSystem.Constants.ElevatorSettings;
 import org.ElevatorSystem.Controllers.ConsoleController;
 import org.ElevatorSystem.Controllers.ElevatorController;
-import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         logger.info("Starting elevatorController");
         System.out.println("Provide set up input:\n(number of elevators) (min floor number) (max floor number)");
@@ -28,13 +29,11 @@ public class Main {
                 lowestFloorNumber = Integer.parseInt(matcher.group(2));
                 highestFloorNumber = Integer.parseInt(matcher.group(3));
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Invalid setUpInput");
         }
         ElevatorController elevatorController = new ElevatorController(numberOfElevators,
-                ElevatorSettings.LOWEST_FLOOR_NUMBER, ElevatorSettings.LOWEST_FLOOR_NUMBER);
+                lowestFloorNumber, highestFloorNumber);
         ConsoleController consoleController = new ConsoleController(elevatorController);
         while (true) {
             System.out.println("""

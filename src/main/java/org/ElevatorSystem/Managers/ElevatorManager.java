@@ -14,31 +14,26 @@ import java.util.*;
 
 public class ElevatorManager implements Manager {
     private static final Logger logger = LoggerFactory.getLogger(ElevatorManager.class);
-    private ArrayList<Elevator> elevators;
+    private final ArrayList<Elevator> elevators;
     private static int lastElevatorId;
-    private int numberOfElevators;
     private final int lowestPossibleFloor;
     private final int highestPossibleFloor;
     private LinkedHashSet<ElevatorTask> waitingRequests;
-    public ElevatorManager(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor)
-    {
+
+    public ElevatorManager(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor) {
         this.elevators = new ArrayList<>();
-        for(int i = 0; i < numberOfElevators; i++)
-        {
+        for (int i = 0; i < numberOfElevators; i++) {
             this.elevators.add(new StandardElevator(lastElevatorId++, new ElevatorQueueManager()));
         }
-        this.numberOfElevators = numberOfElevators;
         this.waitingRequests = new LinkedHashSet<>();
         this.lowestPossibleFloor = lowestPossibleFloor;
         this.highestPossibleFloor = highestPossibleFloor;
     }
 
     @Override
-    public ArrayList<ElevatorStatus> status()
-    {
+    public ArrayList<ElevatorStatus> status() {
         ArrayList<ElevatorStatus> result = new ArrayList<>();
-        for(var elevator : this.elevators)
-        {
+        for (var elevator : this.elevators) {
             result.add(elevator.status());
         }
         return result;
@@ -46,8 +41,7 @@ public class ElevatorManager implements Manager {
 
     @Override
     public void makeStep() {
-        for(var elevator: this.elevators)
-        {
+        for (var elevator : this.elevators) {
             elevator.makeStep();
         }
         var previousWaitingRequests = this.waitingRequests;
@@ -58,15 +52,14 @@ public class ElevatorManager implements Manager {
 
     @Override
     public void addRequest(int floor, ElevatorDirection direction) {
-        if (!isRequestValid(floor))
-        {
+        if (!isRequestValid(floor)) {
             logger.error("Invalid floor: " + floor + " not in range: "
                     + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
             return;
         }
         for (Elevator elevator : elevators) {
             ElevatorDirection elevatorDirection = elevator.getDirection();
-            if (elevatorDirection == direction &&  elevator.isFloorInRange(floor)) {
+            if (elevatorDirection == direction && elevator.isFloorInRange(floor)) {
                 elevator.addRequest(floor);
                 return;
             }
@@ -83,13 +76,10 @@ public class ElevatorManager implements Manager {
     private Optional<Elevator> getBestElevator(int floor) {
         Elevator bestElevator = null;
         int lowestDistance = Integer.MAX_VALUE;
-        for(Elevator elevator :elevators)
-        {
-            if(elevator.getDirection() == ElevatorDirection.Idle)
-            {
+        for (Elevator elevator : elevators) {
+            if (elevator.getDirection() == ElevatorDirection.Idle) {
                 int distance = Math.abs(floor - elevator.getCurrentFloor());
-                if(lowestDistance > distance)
-                {
+                if (lowestDistance > distance) {
                     lowestDistance = distance;
                     bestElevator = elevator;
                 }
@@ -99,20 +89,16 @@ public class ElevatorManager implements Manager {
         return Optional.ofNullable(bestElevator);
     }
 
-    public void addRequestInsideElevator(int elevatorId ,int floor)
-    {
-        if (!isRequestValid(floor))
-        {
+    public void addRequestInsideElevator(int elevatorId, int floor) {
+        if (!isRequestValid(floor)) {
             logger.error("Invalid floor: " + floor + " not in range: "
                     + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
             return;
         }
-        try{
+        try {
             Elevator elevator = getElevatorById(elevatorId);
             elevator.addRequestInside(floor);
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             logger.error("Invalid elevator id: " + elevatorId);
         }
     }
@@ -120,11 +106,9 @@ public class ElevatorManager implements Manager {
 
     @Override
     public void update(int elevatorId, int floor, ElevatorDirection direction) {
-        try{
+        try {
             getElevatorById(elevatorId).update(floor, direction);
-        }
-        catch (IllegalStateException ex)
-        {
+        } catch (IllegalStateException ex) {
             logger.error("Invalid elevator id: " + elevatorId + " update method failed");
         }
     }
@@ -136,8 +120,7 @@ public class ElevatorManager implements Manager {
                 .orElseThrow(() -> new IllegalStateException("Invalid elevatorId"));
     }
 
-    private boolean isRequestValid(int currentFloor)
-    {
+    private boolean isRequestValid(int currentFloor) {
         return currentFloor <= highestPossibleFloor
                 && lowestPossibleFloor <= currentFloor;
     }

@@ -4,7 +4,6 @@ import org.ElevatorSystem.Controllers.Interfaces.ElevatorSystem;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 
 import java.util.Scanner;
-import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,13 +35,11 @@ public class ConsoleController {
                 elevatorSystem.addRequestInsideElevator(elevatorId, floor);
             }
             matcher = nextStep.matcher(userOption);
-            if(matcher.matches())
-            {
+            if (matcher.matches()) {
                 elevatorSystem.step();
             }
             matcher = actualStatus.matcher(userOption);
-            if (matcher.matches())
-            {
+            if (matcher.matches()) {
                 System.out.println(elevatorSystem.status());
             }
 
