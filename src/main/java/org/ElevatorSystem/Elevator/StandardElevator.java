@@ -149,6 +149,10 @@ public class StandardElevator implements Elevator {
 
             if (!this.tasks.isEmptyQueue(this.direction)) {
                 this.destinationFloor = this.tasks.getTask(this.direction);
+                if(this.direction == ElevatorDirection.Idle)
+                {
+                    this.direction = determineDirection(this.currentFloor, this.destinationFloor);
+                }
                 logger.debug("Elevator id: " + this.id + " is setting new destination: " + this.destinationFloor + " " + this.direction);
                 return;
             } else if (this.tasks.isEmptyQueue(this.direction) && this.currentFloor == this.destinationFloor && this.direction != ElevatorDirection.Idle){

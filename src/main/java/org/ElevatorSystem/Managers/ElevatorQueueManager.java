@@ -18,27 +18,13 @@ public class ElevatorQueueManager implements QueueManager {
     public void addRequest(int floor, int currentElevatorFloor, ElevatorDirection elevatorDirection)
     {
         if(currentElevatorFloor == floor) return;
-        switch (elevatorDirection)
+        if(floor > currentElevatorFloor)
         {
-            case Up -> {
-                if(floor > currentElevatorFloor)
-                {
-                    this.upQueue.add(floor);
-                }
-            }
-            case Down -> {
-                if(floor < currentElevatorFloor)
-                {
-                    this.downQueue.add(floor);
-                }
-            }
-            case Idle ->
-                addRequest(floor, currentElevatorFloor, determineDirection(currentElevatorFloor, floor));
+            this.upQueue.add(floor);
         }
-    }
-
-    private ElevatorDirection determineDirection(int currentFloor, int destinationFloor) {
-        return currentFloor < destinationFloor ? ElevatorDirection.Up : ElevatorDirection.Down;
+        else {
+            this.downQueue.add(floor);
+        }
     }
 
     @Override
