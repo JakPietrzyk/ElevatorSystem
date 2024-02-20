@@ -5,7 +5,6 @@ import org.ElevatorSystem.Elevator.StandardElevator;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorTask;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
-import org.ElevatorSystem.Constants.ElevatorSettings;
 import org.ElevatorSystem.Managers.Interfaces.Manager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class ElevatorManager implements Manager {
     public ElevatorManager(int numberOfElevators, int lowestPossibleFloor, int highestPossibleFloor) {
         this.elevators = new ArrayList<>();
         for (int i = 0; i < numberOfElevators; i++) {
-            this.elevators.add(new StandardElevator(lastElevatorId++, new ElevatorQueueManager()));
+            this.elevators.add(new StandardElevator(lastElevatorId++, highestPossibleFloor, lowestPossibleFloor, new ElevatorQueueManager()));
         }
         this.waitingRequests = new LinkedHashSet<>();
         this.lowestPossibleFloor = lowestPossibleFloor;
@@ -54,7 +53,7 @@ public class ElevatorManager implements Manager {
     public void addRequest(int floor, ElevatorDirection direction) {
         if (!isRequestValid(floor)) {
             logger.error("Invalid floor: " + floor + " not in range: "
-                    + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
+                    + lowestPossibleFloor + " : " + highestPossibleFloor);
             return;
         }
         for (Elevator elevator : elevators) {
@@ -92,7 +91,7 @@ public class ElevatorManager implements Manager {
     public void addRequestInsideElevator(int elevatorId, int floor) {
         if (!isRequestValid(floor)) {
             logger.error("Invalid floor: " + floor + " not in range: "
-                    + ElevatorSettings.LOWEST_FLOOR_NUMBER + "-" + ElevatorSettings.HIGHEST_FLOOR_NUMBER);
+                    + lowestPossibleFloor + " : " + highestPossibleFloor);
             return;
         }
         try {

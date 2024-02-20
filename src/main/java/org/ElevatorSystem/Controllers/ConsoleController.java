@@ -9,16 +9,17 @@ import java.util.regex.Pattern;
 
 public class ConsoleController {
     final ElevatorSystem elevatorSystem;
-    final Pattern nextPickupRegex = Pattern.compile("pickup (\\d+) (UP|DOWN)");
-    final Pattern nextRequestInsideRegex = Pattern.compile("add (\\d+) (\\d+)");
-    final Pattern nextStep = Pattern.compile("step");
-    final Pattern actualStatus = Pattern.compile("status");
+    final Pattern nextPickupRegex = Pattern.compile("pickup (-?\\d+) (UP|DOWN)");
+    final Pattern nextRequestInsideRegex = Pattern.compile("add (\\d+) (-?\\d+)");
+    final Pattern nextStepRegex = Pattern.compile("step");
+    final Pattern actualStatusRegex = Pattern.compile("status");
+    final Pattern exitRegex = Pattern.compile("exit");
 
     public ConsoleController(ElevatorSystem elevatorSystem) {
         this.elevatorSystem = elevatorSystem;
     }
 
-    public void executeNextCommand() {
+    public boolean executeNextCommand() {
         Scanner scanner = new Scanner(System.in);
         try {
             var userOption = scanner.nextLine();
@@ -27,24 +28,36 @@ public class ConsoleController {
                 int floor = Integer.parseInt(matcher.group(1));
                 ElevatorDirection direction = ElevatorDirection.parse(matcher.group(2));
                 elevatorSystem.pickup(floor, direction);
+                return false;
             }
             matcher = nextRequestInsideRegex.matcher(userOption);
             if (matcher.matches()) {
                 int elevatorId = Integer.parseInt(matcher.group(1));
                 int floor = Integer.parseInt(matcher.group(2));
                 elevatorSystem.addRequestInsideElevator(elevatorId, floor);
+                return false;
             }
-            matcher = nextStep.matcher(userOption);
+            matcher = nextStepRegex.matcher(userOption);
             if (matcher.matches()) {
                 elevatorSystem.step();
+                return false;
             }
-            matcher = actualStatus.matcher(userOption);
+            matcher = actualStatusRegex.matcher(userOption);
             if (matcher.matches()) {
                 System.out.println(elevatorSystem.status());
+                return false;
+            }
+            matcher = exitRegex.matcher(userOption);
+            if(matcher.matches()) {
+                return true;
             }
 
+            System.out.println("Invalid option. Try again.");
+            return false;
+
         } catch (Exception e) {
-            System.out.println("Invalid option");
+            System.out.println("Invalid option. Try again.");
         }
+        return false;
     }
 }

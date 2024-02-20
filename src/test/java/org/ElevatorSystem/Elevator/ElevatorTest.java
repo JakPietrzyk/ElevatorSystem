@@ -7,16 +7,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.util.LinkedHashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ElevatorTest {
 
     private StandardElevator elevator;
+
     @BeforeEach
     void setUp() {
-        this.elevator = new StandardElevator(1, new ElevatorQueueManager());
+        this.elevator = new StandardElevator(1, ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER, ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER, new ElevatorQueueManager());
         this.elevator.update(0, ElevatorDirection.Idle);
     }
 
@@ -28,8 +28,7 @@ class ElevatorTest {
     }
 
     @Test
-    void Two_Requests_In_Range_Should_Direction_Up_And_One_Task()
-    {
+    void Two_Requests_In_Range_Should_Direction_Up_And_One_Task() {
         elevator.addRequest(1);
         assertEquals(ElevatorDirection.Up, elevator.getDirection());
         elevator.addRequest(4);
@@ -50,7 +49,7 @@ class ElevatorTest {
     @Test
     void Make_Step_Up_Elevator_Should_Increment_Current_Floor() {
         int startingCurrentFloor = elevator.getCurrentFloor();
-        elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
+        elevator.addRequest(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER);
         elevator.makeStep();
         int nextCurrentFloor = elevator.getCurrentFloor();
         assertEquals(nextCurrentFloor, startingCurrentFloor + 1);
@@ -60,20 +59,22 @@ class ElevatorTest {
 
     @Test
     void IsFloorInRange_Idle_Elevator() {
-        assertTrue(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
-        assertTrue(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER));
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER));
         assertTrue(elevator.isFloorInRange(elevator.getCurrentFloor()));
     }
+
     @Test
     void IsFloorInRange_Up_Elevator() {
-        elevator.addRequest(ElevatorSettings.HIGHEST_FLOOR_NUMBER);
-        assertTrue(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
-        assertFalse(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
+        elevator.addRequest(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER);
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER));
+        assertFalse(elevator.isFloorInRange(ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER));
     }
+
     @Test
     void IsFloorInRange_Down_Elevator() {
-        elevator.addRequest(ElevatorSettings.LOWEST_FLOOR_NUMBER);
-        assertTrue(elevator.isFloorInRange(ElevatorSettings.LOWEST_FLOOR_NUMBER));
-        assertFalse(elevator.isFloorInRange(ElevatorSettings.HIGHEST_FLOOR_NUMBER));
+        elevator.addRequest(ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER);
+        assertTrue(elevator.isFloorInRange(ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER));
+        assertFalse(elevator.isFloorInRange(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER));
     }
 }

@@ -1,15 +1,8 @@
 # ElevatorSystem
 The Elevator System is a Java-based application designed to manage and control multiple elevators within a building. It provides functionality for handling elevator requests, updating elevator status, and managing elevator queues efficiently.
-## Installation
-```bash
-git clone https://github.com/JakPietrzyk/ElevatorSystem.git
-```
-```bash
-mvn clean install
-```
-```bash
-java -jar elevator-system.jar
-```
+## Running the Project 
+To run the project, it is recommended to use IntelliJ IDEA with Maven as the build tool. 
+Locate the Main class and start application.
 ## Algorithm Overview
 * Upon receiving a request, the elevator determines its direction of travel.
 * The elevator adds to its queue only those requests that are in the current direction.
@@ -28,6 +21,7 @@ It allows users to input commands for controlling elevators and monitoring their
 * "add <elevatorId\> <floor\>" to add a request inside a specific elevator to stop at a certain floor (e.g., "add 1 8").
 * "step" to advance the elevator system by one step.
 * "status" to check the current status of the elevators.
+* "exit" to close application.
 ### ElevatorController class
 Represents the controller for managing elevators in a building. 
 It implements the ElevatorSystem interface.

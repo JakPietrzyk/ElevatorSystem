@@ -1,6 +1,5 @@
 package org.ElevatorSystem.Controllers;
 
-import org.ElevatorSystem.Controllers.ElevatorController;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Constants.ElevatorSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +21,8 @@ class ElevatorControllerTest {
     @Test
     void Pickup_From_Highest_Floor_Should_Set_Destination_Floor()
     {
-        elevatorControllerWithSingleElevator.pickup(ElevatorSettings.HIGHEST_FLOOR_NUMBER, ElevatorDirection.Down);
-        assertEquals(ElevatorSettings.HIGHEST_FLOOR_NUMBER, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
+        elevatorControllerWithSingleElevator.pickup(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER, ElevatorDirection.Down);
+        assertEquals(ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER, elevatorControllerWithSingleElevator.status().getFirst().destinationFloor());
     }
 
     @Test

@@ -4,28 +4,35 @@ import org.ElevatorSystem.Elevator.Interfaces.Elevator;
 import org.ElevatorSystem.Elevator.Models.ElevatorDirection;
 import org.ElevatorSystem.Elevator.Models.ElevatorStatus;
 import org.ElevatorSystem.Managers.ElevatorQueueManager;
-import org.ElevatorSystem.Constants.ElevatorSettings;
 import org.ElevatorSystem.Managers.Interfaces.QueueManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static org.ElevatorSystem.Constants.ElevatorSettings.DEFAULT_HIGHEST_FLOOR_NUMBER;
+import static org.ElevatorSystem.Constants.ElevatorSettings.DEFAULT_LOWEST_FLOOR_NUMBER;
+
 public class StandardElevator implements Elevator {
     private static final Logger logger = LoggerFactory.getLogger(StandardElevator.class);
     private final int id;
+    private final int highestPossibleFloor;
+    private final int lowestPossibleFloor;
+
     private int currentFloor;
     private int destinationFloor;
     private ElevatorDirection direction;
     private final QueueManager tasks;
 
     public StandardElevator(int id) {
-        this(id, new ElevatorQueueManager());
+        this(id, DEFAULT_HIGHEST_FLOOR_NUMBER, DEFAULT_LOWEST_FLOOR_NUMBER, new ElevatorQueueManager());
     }
 
-    public StandardElevator(int id, QueueManager queueManager) {
+    public StandardElevator(int id, int highestPossibleFloor, int lowestPossibleFloor, QueueManager queueManager) {
         this.id = id;
-        this.currentFloor = ElevatorSettings.LOWEST_FLOOR_NUMBER;
+        this.highestPossibleFloor = highestPossibleFloor;
+        this.lowestPossibleFloor = lowestPossibleFloor;
+        this.currentFloor = lowestPossibleFloor;
         this.destinationFloor = this.currentFloor;
         this.tasks = queueManager;
         this.direction = ElevatorDirection.Idle;
@@ -127,10 +134,10 @@ public class StandardElevator implements Elevator {
     public boolean isFloorInRange(int floor) {
         switch (this.direction) {
             case Up -> {
-                return ElevatorSettings.HIGHEST_FLOOR_NUMBER >= floor && floor >= this.currentFloor;
+                return this.highestPossibleFloor >= floor && floor >= this.currentFloor;
             }
             case Down -> {
-                return this.currentFloor >= floor && floor >= ElevatorSettings.LOWEST_FLOOR_NUMBER;
+                return this.currentFloor >= floor && floor >= this.lowestPossibleFloor;
             }
         }
         return true;
